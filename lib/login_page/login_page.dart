@@ -17,40 +17,51 @@ class LoginPage extends StatelessWidget {
           ],
           elevation: 0.0,
         ),
-        body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          color: Colors.yellow[300],
-          child: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: Column(
-              children: [
-                Expanded(
-                  child: SizedBox(),
-                  flex: 1,
-                ),
-                Expanded(
-                  child: MainScreen(),
-                  flex: 8,
-                ),
-              ],
+        body: _BuildBody(),
+      ),
+    );
+  }
+}
+
+class _BuildBody extends StatelessWidget {
+  const _BuildBody({super.key,});
+
+  @override
+  Widget build(BuildContext context) {
+    // body 전체 배경색을 위해 Container를 infinity로 지정
+    return Container(
+      height: double.infinity,
+      width: double.infinity,
+      color: Colors.yellow[300],
+      // 배경 클릭 시 text field에 있는 focus를 없애 키보드를 사라지게 해줌
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Column(
+          children: [
+            // 전체 폰 화면에서 가운데가 될 수 있게 flex를 조절
+            Expanded(
+              child: SizedBox(),
+              flex: 1,
             ),
-          ),
+            Expanded(
+              child: _MainScreen(),
+              flex: 8,
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class MainScreen extends StatelessWidget {
-  const MainScreen({
-    super.key,
-  });
+class _MainScreen extends StatelessWidget {
+  const _MainScreen({super.key,});
 
   @override
   Widget build(BuildContext context) {
+    // 키보드 올라왔을 때 자동으로 스크롤 될 수 있게 해주는 widget
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(30.0),
@@ -81,7 +92,6 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-
   TextEditingController idTextController = TextEditingController();
   TextEditingController pwTextController = TextEditingController();
   bool? autoLoginFlag = false;
@@ -129,7 +139,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 onPressed: () {
                   setState(() {
-                    if (checkIdPw(context, idTextController.text, pwTextController.text)) {
+                    if (_checkIdPw(context, idTextController.text, pwTextController.text)) {
                       if (autoLoginFlag! == false) {
                         idTextController.text = '';
                         pwTextController.text = '';
@@ -176,34 +186,34 @@ class _LoginFormState extends State<LoginForm> {
       ],
     );
   }
-}
 
-bool checkIdPw(BuildContext context, String id, String pw) {
-  final dbId = 'test';
-  final dbPw = '1234';
-  final duration = 2;
-  if (dbId != id) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('ID가 올바르지 않습니다.'),
-        duration: Duration(seconds: duration),
-        backgroundColor: Colors.lightBlue,
-      ),
-    );
-    return false;
-  }
-  else if (dbPw != pw) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('PW가 올바르지 않습니다.'),
-        duration: Duration(seconds: duration),
-        backgroundColor: Colors.lightBlue,
-      ),
-    );
-    return false;
-  }
-  else {
-    Navigator.pushNamed(context, '/friend_page');
-    return true;
+  bool _checkIdPw(BuildContext context, String id, String pw) {
+    final dbId = 'test';
+    final dbPw = '1234';
+    final duration = 2;
+    if (dbId != id) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('ID가 올바르지 않습니다.'),
+          duration: Duration(seconds: duration),
+          backgroundColor: Colors.lightBlue,
+        ),
+      );
+      return false;
+    }
+    else if (dbPw != pw) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('PW가 올바르지 않습니다.'),
+          duration: Duration(seconds: duration),
+          backgroundColor: Colors.lightBlue,
+        ),
+      );
+      return false;
+    }
+    else {
+      Navigator.pushNamed(context, '/friend_page');
+      return true;
+    }
   }
 }
