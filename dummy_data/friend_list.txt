@@ -1,0 +1,69 @@
+{
+  "friendList": [
+    {
+      "id": 1,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김일등"
+    },
+    {
+      "id": 2,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김이등"
+    },
+    {
+      "id": 3,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김삼등"
+    },
+    {
+      "id": 4,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김사등"
+    },
+    {
+      "id": 5,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김오등"
+    },
+    {
+      "id": 6,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김육등"
+    },
+    {
+      "id": 7,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김칠등"
+    },
+    {
+      "id": 8,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김팔등"
+    },
+    {
+      "id": 9,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김구등"
+    },
+    {
+      "id": 10,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김십등"
+    },
+    {
+      "id": 11,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김십일등"
+    },
+    {
+      "id": 12,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김십이등"
+    },
+    {
+      "id": 13,
+      "picturePath": "assets/basic_profile_picture.png",
+      "name": "김십삼등"
+    }
+  ]
+}

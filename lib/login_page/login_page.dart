@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pineapple_tok/data/account.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -72,7 +73,7 @@ class _MainScreen extends StatelessWidget {
               height: 200.0,
             ),
             SizedBox(
-              height: 20.0,
+              height: 40.0,
             ),
             LoginForm(),
           ],
@@ -100,30 +101,11 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: 'Enter your ID',
-            filled: true,
-            fillColor: Colors.white,
-          ),
-          keyboardType: TextInputType.emailAddress,
-          controller: idTextController,
-        ),
+        _MyTextField('Enter your ID', TextInputType.emailAddress, idTextController, false),
         SizedBox(
           height: 10.0,
         ),
-        TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: 'Enter your Password',
-            filled: true,
-            fillColor: Colors.white,
-          ),
-          keyboardType: TextInputType.text,
-          obscureText: true,
-          controller: pwTextController,
-        ),
+        _MyTextField('Enter your Password', TextInputType.text, pwTextController, true),
         SizedBox(
           height: 10.0,
         ),
@@ -133,78 +115,93 @@ class _LoginFormState extends State<LoginForm> {
           // login page에서만 snack bar가 보일 수 있도록 Builder 추가
           child: Builder(
             builder: (context) {
-              return ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[400],
-                ),
-                onPressed: () {
-                  setState(() {
-                    if (_checkIdPw(context, idTextController.text, pwTextController.text)) {
-                      if (autoLoginFlag! == false) {
-                        idTextController.text = '';
-                        pwTextController.text = '';
-                      }
-                    }
-                  });
-                },
-                child: Text(
-                  '로그인',
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              );
+              return _loginButton(context);
             }
           ),
         ),
         SizedBox(
           height: 10.0,
         ),
-        Row(
-          children: [
-            Checkbox(
-              value: autoLoginFlag,
-              onChanged: (bool? newValue) {
-                setState(() {
-                  autoLoginFlag = newValue;
-                });
-              },
-              checkColor: Colors.black54,
-              activeColor: Colors.white,
-            ),
-            Text(
-              '자동로그인',
-              style: TextStyle(
-                fontSize: 15.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        _checkAutoLogin(),
+      ],
+    );
+  }
+
+  Row _checkAutoLogin() {
+    return Row(
+      children: [
+        Checkbox(
+          value: autoLoginFlag,
+          onChanged: (bool? newValue) {
+            setState(() {
+              autoLoginFlag = newValue;
+            });
+          },
+          checkColor: Colors.black54,
+          activeColor: Colors.white,
+        ),
+        Text(
+          '자동로그인',
+          style: TextStyle(
+            fontSize: 15.0,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
   }
 
-  bool _checkIdPw(BuildContext context, String id, String pw) {
-    final dbId = 'test';
-    final dbPw = '1234';
-    final duration = 2;
-    if (dbId != id) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('ID가 올바르지 않습니다.'),
-          duration: Duration(seconds: duration),
-          backgroundColor: Colors.lightBlue,
+  TextField _MyTextField(String hintText, TextInputType type, TextEditingController controller, bool secure) {
+    return TextField(
+      decoration: InputDecoration(
+        border: OutlineInputBorder(),
+        hintText: hintText,
+        filled: true,
+        fillColor: Colors.white,
+      ),
+      keyboardType: type,
+      controller: controller,
+      obscureText: secure,
+    );
+  }
+
+  ElevatedButton _loginButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.green[400],
+      ),
+      onPressed: () async {
+        bool isValid = await _checkIdPw(context, idTextController.text, pwTextController.text);
+        setState(() {
+          if (isValid) {
+            if (autoLoginFlag! == false) {
+              idTextController.text = '';
+              pwTextController.text = '';
+            }
+          }
+        });
+      },
+      child: Text(
+        '로그인',
+        style: TextStyle(
+          fontSize: 20.0,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
-      );
-      return false;
-    }
-    else if (dbPw != pw) {
+      ),
+    );
+  }
+
+  Future<bool> _checkIdPw(BuildContext context, String id, String pw) async {
+    final duration = 2;
+
+    Account account = Account();
+    bool isValid = await account.checkIdPw(id, pw);
+
+    if (!isValid) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('PW가 올바르지 않습니다.'),
+          content: Text('ID 또는 PW가 올바르지 않습니다.'),
           duration: Duration(seconds: duration),
           backgroundColor: Colors.lightBlue,
         ),

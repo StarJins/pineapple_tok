@@ -1,0 +1,6 @@
+{
+  "myProfile": {
+    "picturePath": "assets/basic_profile_picture.png",
+    "name": "김자신"
+  }
+}
