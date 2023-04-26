@@ -10,8 +10,8 @@ class FriendPage extends StatefulWidget {
 }
 
 class _FriendPageState extends State<FriendPage> {
-  late Future<MyProfile> myProfile;
-  late Future<List<Friend>> friendList;
+  MyProfile? myProfile = null;
+  List<Friend>? friendList = null;
 
   // initState는 statefulWidget이 생성될 때 제일 처음에 호출된다.
   // initState와 반대의 개념인 deactivate도 존재한다.
@@ -20,10 +20,28 @@ class _FriendPageState extends State<FriendPage> {
     // TODO: implement initState
     super.initState();
 
-    // data load
-    myProfile = loadMyProfile();
-    myProfile = loadMyProfile();
-    friendList = loadFriendList();
+    // initState가 끝나기 전에 build가 호출될 수 있다.
+    // 따라서 변수가 초기화 되기 전에 build가 실행될 수 있는 것
+    // 이전 version에서는 FutureBuilder를 통해 이를 제어
+    // 현재 version에서는 if문과 null을 통해 이를 제어
+    // 변수 초기화 후 widget을 rebuild하기 위해 loadData 내에서 setState 호출
+    this._loadData();
+  }
+
+  void _loadData() async {
+    this.myProfile = await this._loadMyProfile();
+    this.friendList = await this._loadFriendList();
+    setState(() {});
+  }
+
+  Future<MyProfile> _loadMyProfile() async {
+    MyProfileHandler p = MyProfileHandler();
+    return p.updateMyProfile();
+  }
+
+  Future<List<Friend>> _loadFriendList() async {
+    FriendHandler f = FriendHandler();
+    return f.updateFriendList();
   }
 
   @override
@@ -42,72 +60,40 @@ class _FriendPageState extends State<FriendPage> {
               height: 20,
               thickness: 2.0,
             ),
-            _buildFriendList(),
+            Expanded(
+              child: ListView(
+                children: _buildFriendList(),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  FutureBuilder<List<Friend>> _buildFriendList() {
-    // Future 타입에 담아둔 값을 사용하기 위해 FutureBuilder 사용
-    return FutureBuilder(
-      future: friendList,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          // Column안에 Listview를 다른 Widget가 같이 넣을 때, 높이를 지정해야 된다.
-          // 이때 남은 공간을 다 차지하게 하기 위해 Expanded widget 사용
-          return Expanded(
-            child: ListView(
-              children: [
-                for (var x in snapshot.data!)
-                  ListTile(
-                    leading: Image.asset(x.picturePath),
-                    title: Text(x.name),
-                    subtitle: Text(x.id.toString()),
-                  ),
-              ],
-            ),
-          );
-        }
-        else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-        else {
-          return const CircularProgressIndicator();
-        }
-      },
-    );
+  Widget _buildMyProfile() {
+    if (this.myProfile != null) {
+      return ListTile(
+        leading: Image.asset(this.myProfile!.picturePath),
+        title: Text(this.myProfile!.name),
+      );
+    } else {
+      return CircularProgressIndicator();
+    }
   }
 
-  FutureBuilder<MyProfile> _buildMyProfile() {
-    // Future 타입에 담아둔 값을 사용하기 위해 FutureBuilder 사용
-    return FutureBuilder(
-      future: myProfile,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          return ListTile(
-            leading: Image.asset(snapshot.data!.picturePath),
-            title: Text(snapshot.data!.name),
-          );
-        }
-        else if (snapshot.hasError) {
-          return Text('${snapshot.error}');
-        }
-        else {
-          return const CircularProgressIndicator();
-        }
-      },
-    );
-  }
-
-  Future<MyProfile> loadMyProfile() async {
-    MyProfileHandler p = MyProfileHandler();
-    return p.updateMyProfile();
-  }
-
-  Future<List<Friend>> loadFriendList() async {
-    FriendHandler f = FriendHandler();
-    return f.updateFriendList();
+  List<Widget> _buildFriendList() {
+    if (this.friendList != null) {
+      return List.generate(
+        this.friendList!.length,
+        (index) => ListTile(
+          leading: Image.asset(this.friendList![index].picturePath),
+          title: Text(this.friendList![index].name),
+          subtitle: Text(this.friendList![index].id.toString()),
+        )
+      );
+    } else {
+      return [ CircularProgressIndicator() ];
+    }
   }
 }
