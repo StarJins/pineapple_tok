@@ -46,27 +46,21 @@ class _FriendPageState extends State<FriendPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Friend page'),
-        elevation: 0.0,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            _buildMyProfile(),
-            Divider(
-              height: 20,
-              thickness: 2.0,
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          _buildMyProfile(),
+          Divider(
+            height: 20,
+            thickness: 2.0,
+          ),
+          Expanded(
+            child: ListView(
+              children: _buildFriendList(),
             ),
-            Expanded(
-              child: ListView(
-                children: _buildFriendList(),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
