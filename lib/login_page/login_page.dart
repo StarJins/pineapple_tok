@@ -209,7 +209,7 @@ class _LoginFormState extends State<LoginForm> {
       return false;
     }
     else {
-      Navigator.pushNamed(context, '/main_page');
+      Navigator.of(context).pushNamed('/main_page');
       return true;
     }
   }

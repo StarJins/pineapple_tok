@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:pineapple_tok/data/friend.dart';
 import 'package:pineapple_tok/data/my_profile.dart';
+import 'package:pineapple_tok/friend_page/profile_page.dart';
 
 class FriendPage extends StatefulWidget {
   const FriendPage({Key? key}) : super(key: key);
@@ -50,14 +52,14 @@ class _FriendPageState extends State<FriendPage> {
       padding: const EdgeInsets.all(10.0),
       child: Column(
         children: [
-          _buildMyProfile(),
+          _buildMyProfile(context),
           Divider(
             height: 20,
             thickness: 2.0,
           ),
           Expanded(
             child: ListView(
-              children: _buildFriendList(),
+              children: _buildFriendList(context),
             ),
           ),
         ],
@@ -65,18 +67,26 @@ class _FriendPageState extends State<FriendPage> {
     );
   }
 
-  Widget _buildMyProfile() {
+  Widget _buildMyProfile(BuildContext context) {
     if (this.myProfile != null) {
       return ListTile(
         leading: Image.asset(this.myProfile!.picturePath),
         title: Text(this.myProfile!.name),
+        onTap: () {
+          Navigator.of(context).push(
+            PageTransition(
+              type: PageTransitionType.bottomToTop,
+              child: ProfilePage(profileInfo: this.myProfile!),
+            ),
+          );
+        },
       );
     } else {
       return CircularProgressIndicator();
     }
   }
 
-  List<Widget> _buildFriendList() {
+  List<Widget> _buildFriendList(BuildContext context) {
     if (this.friendList != null) {
       return List.generate(
         this.friendList!.length,
@@ -84,6 +94,14 @@ class _FriendPageState extends State<FriendPage> {
           leading: Image.asset(this.friendList![index].picturePath),
           title: Text(this.friendList![index].name),
           subtitle: Text(this.friendList![index].id.toString()),
+          onTap: () {
+            Navigator.of(context).push(
+              PageTransition(
+                type: PageTransitionType.bottomToTop,
+                child: ProfilePage(profileInfo: this.friendList![index]),
+              ),
+            );
+          },
         )
       );
     } else {

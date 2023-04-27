@@ -4,6 +4,7 @@ import 'package:pineapple_tok/layout/main_page.dart';
 import 'package:pineapple_tok/friend_page/friend_page.dart';
 import 'package:pineapple_tok/chatting_page/chatting_page.dart';
 import 'package:pineapple_tok/credit_page/credit_page.dart';
+// import 'friend_page/profile_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -21,6 +22,7 @@ final Map<int, Page> pageList = {
   0 : Page('friend page', '/friend_page', FriendPage()),
   1 : Page('chatting page', '/chatting_page', ChattingPage()),
   2 : Page('credit page', '/credit_page', CreditPage()),
+  // 3 : Page('profile page', '/profile_page', ProfilePage()),
 };
 
 class MyApp extends StatelessWidget {
