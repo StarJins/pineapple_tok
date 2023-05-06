@@ -62,8 +62,10 @@ class _ChattingPageState extends State<ChattingPage> {
           title: Row(
             children: [
               Text(this.chattingList![index].chattingRoomName),
-              SizedBox(width: 10.0,),
-              Text(this.chattingList![index].numOfPeople.toString()),
+              if (this.chattingList![index].chattingRoomType == ChattingType.group) ... [
+                SizedBox(width: 10.0,),
+                Text(this.chattingList![index].numOfPeople.toString()),
+              ]
             ],
           ),
           subtitle: Text(this.chattingList![index].lastChat),

@@ -21,6 +21,17 @@
       "peopleList": [
         2
       ]
+    },
+    {
+      "type": 1,
+      "path": "assets/basic_profile_picture.png",
+      "name": "단체방",
+      "lastChat": "이건 단체방이야",
+      "lastTime": "19:00",
+      "numOfPeople": 5,
+      "peopleList": [
+        2, 4, 6, 7, 8
+      ]
     }
   ]
 }
