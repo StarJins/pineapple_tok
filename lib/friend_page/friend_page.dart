@@ -52,11 +52,6 @@ class _FriendPageState extends State<FriendPage> {
       padding: const EdgeInsets.all(10.0),
       child: Column(
         children: [
-          _buildMyProfile(context),
-          Divider(
-            height: 20,
-            thickness: 2.0,
-          ),
           Expanded(
             child: ListView(
               children: _buildFriendList(context),
@@ -88,7 +83,7 @@ class _FriendPageState extends State<FriendPage> {
 
   List<Widget> _buildFriendList(BuildContext context) {
     if (this.friendList != null) {
-      return List.generate(
+      List<Widget> tileList =  List.generate(
         this.friendList!.length,
         (index) => ListTile(
           leading: Image.asset(this.friendList![index].picturePath),
@@ -104,6 +99,13 @@ class _FriendPageState extends State<FriendPage> {
           },
         )
       );
+      tileList.insert(0, Divider(
+        height: 20,
+        thickness: 2.0,
+      ));
+      tileList.insert(0, _buildMyProfile(context));
+
+      return tileList;
     } else {
       return [ CircularProgressIndicator() ];
     }
