@@ -1,22 +1,26 @@
-import 'dart:convert';
+import 'package:flutter/material.dart';
 
-String accountList = '{"accountList": [{"id": "test","password":"1234"}]}';
+void main() => runApp(A());
 
-class Account {
-  late final dynamic account;
+class A extends StatelessWidget {
+  int number = 1;
+  A({Key? key}) : super(key: key);
 
-  void getAccountList() {
-    account = jsonDecode(accountList);
-    print(account);
-    print(account["accountList"][0]);
-    for (var x in account["accountList"]) {
-      print(x["id"]);
-      print(x["password"]);
-    }
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: B(number),
+    );
   }
 }
 
-void main() {
-  Account a = Account();
-  a.getAccountList();
+class B extends StatelessWidget {
+  int number;
+  B(this.number, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    print(number);
+    return Text('b');
+  }
 }

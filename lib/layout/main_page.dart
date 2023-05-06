@@ -27,6 +27,7 @@ class _MainPageState extends State<MainPage> {
     return AppBar(
       title: Text('${page.pageList[this._selectedPageIdx]!.pageName}'),
       automaticallyImplyLeading: false,
+      elevation: 0.0,
     );
   }
 

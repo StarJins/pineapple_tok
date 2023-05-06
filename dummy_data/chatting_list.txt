@@ -1,0 +1,26 @@
+{
+  "chattingRoomList": [
+    {
+      "type": 0,
+      "path": "assets/basic_profile_picture.png",
+      "name": "김일등",
+      "lastChat": "안녕",
+      "lastTime": "19:00",
+      "numOfPeople": 2,
+      "peopleList": [
+        1
+      ]
+    },
+    {
+      "type": 0,
+      "path": "assets/basic_profile_picture.png",
+      "name": "김이등",
+      "lastChat": "안녕",
+      "lastTime": "19:00",
+      "numOfPeople": 2,
+      "peopleList": [
+        2
+      ]
+    }
+  ]
+}
