@@ -4,17 +4,41 @@ import 'package:pineapple_tok/data/profile.dart';
 import 'dart:async';
 
 class MyProfile extends Profile {
-  MyProfile(String picturePath, String name) : super(picturePath, name);
+  MyProfile(String thumbnail, String background, String name, String comment)
+      : super(thumbnail, background, name, comment);
 
-  factory MyProfile.getMyProfile(String picturePath, String name) {
-    return MyProfile(picturePath, name);
+  factory MyProfile.getMyProfile(String thumbnail, String background, String name, String comment) {
+    return MyProfile(thumbnail, background, name, comment);
   }
 }
 
 class MyProfileHandler {
+  final currentId;
+
+  MyProfileHandler(this.currentId);
+
   Future<MyProfile> updateMyProfile() async {
-    String jsonData = await rootBundle.loadString('dummy_data/my_profile.txt');
+    String jsonData = await rootBundle.loadString('dummy_data/user_profile.json');
     dynamic parsingData = jsonDecode(jsonData);
-    return MyProfile.getMyProfile(parsingData['myProfile']['picturePath'], parsingData['myProfile']['name']);
+
+    String thumbnail = '';
+    String background = '';
+    String name = '';
+    String comment = '';
+    for (var x in parsingData['user_profile']) {
+      if (x['id'] == this.currentId) {
+        thumbnail = x['thumbnail'];
+        if (thumbnail == '') {
+          thumbnail = 'assets/basic_profile_picture.png';
+        }
+        background = x['background'];
+        name = x['name'];
+        comment = x['comment'];
+
+        break;
+      }
+    }
+
+    return MyProfile.getMyProfile(thumbnail, background, name, comment);
   }
 }

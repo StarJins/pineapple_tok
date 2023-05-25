@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pineapple_tok/data/account.dart';
+import 'package:pineapple_tok/layout/main_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -209,7 +210,8 @@ class _LoginFormState extends State<LoginForm> {
       return false;
     }
     else {
-      Navigator.of(context).pushNamed('/main_page');
+      int currentId = account.getUserId();
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainPage(currentId)));
       return true;
     }
   }

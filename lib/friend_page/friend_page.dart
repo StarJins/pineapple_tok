@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pineapple_tok/data/friend.dart';
 import 'package:pineapple_tok/data/my_profile.dart';
+import 'package:pineapple_tok/data/profile.dart';
 import 'package:pineapple_tok/friend_page/profile_page.dart';
 
 class FriendPage extends StatefulWidget {
-  const FriendPage({Key? key}) : super(key: key);
+  final int currentId;
+  const FriendPage(this.currentId, {Key? key}) : super(key: key);
 
   @override
   State<FriendPage> createState() => _FriendPageState();
@@ -37,12 +39,12 @@ class _FriendPageState extends State<FriendPage> {
   }
 
   Future<MyProfile> _loadMyProfile() async {
-    MyProfileHandler p = MyProfileHandler();
+    MyProfileHandler p = MyProfileHandler(widget.currentId);
     return p.updateMyProfile();
   }
 
   Future<List<Friend>> _loadFriendList() async {
-    FriendHandler f = FriendHandler();
+    FriendHandler f = FriendHandler(widget.currentId);
     return f.updateFriendList();
   }
 
@@ -64,18 +66,7 @@ class _FriendPageState extends State<FriendPage> {
 
   Widget _buildMyProfile(BuildContext context) {
     if (this.myProfile != null) {
-      return ListTile(
-        leading: Image.asset(this.myProfile!.picturePath),
-        title: Text(this.myProfile!.name),
-        onTap: () {
-          Navigator.of(context).push(
-            PageTransition(
-              type: PageTransitionType.bottomToTop,
-              child: ProfilePage(profileInfo: this.myProfile!),
-            ),
-          );
-        },
-      );
+      return makeProfileTile(this.myProfile!);
     } else {
       return CircularProgressIndicator();
     }
@@ -85,19 +76,7 @@ class _FriendPageState extends State<FriendPage> {
     if (this.friendList != null) {
       List<Widget> tileList =  List.generate(
         this.friendList!.length,
-        (index) => ListTile(
-          leading: Image.asset(this.friendList![index].picturePath),
-          title: Text(this.friendList![index].name),
-          subtitle: Text(this.friendList![index].id.toString()),
-          onTap: () {
-            Navigator.of(context).push(
-              PageTransition(
-                type: PageTransitionType.bottomToTop,
-                child: ProfilePage(profileInfo: this.friendList![index]),
-              ),
-            );
-          },
-        )
+        (index) => makeProfileTile(this.friendList![index])
       );
       tileList.insert(0, Divider(
         height: 20,
@@ -109,5 +88,21 @@ class _FriendPageState extends State<FriendPage> {
     } else {
       return [ CircularProgressIndicator() ];
     }
+  }
+
+  ListTile makeProfileTile(Profile data) {
+    return ListTile(
+      leading: Image.asset(data.thumbnail),
+      title: Text(data.name),
+      subtitle: Text(data.comment),
+      onTap: () {
+        Navigator.of(context).push(
+          PageTransition(
+            type: PageTransitionType.bottomToTop,
+            child: ProfilePage(profileInfo: data),
+          ),
+        );
+      },
+    );
   }
 }

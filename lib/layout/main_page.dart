@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:pineapple_tok/main.dart' as page;
+import 'package:pineapple_tok/chatting_page/chatting_page.dart';
+import 'package:pineapple_tok/credit_page/credit_page.dart';
+import 'package:pineapple_tok/friend_page/friend_page.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage({Key? key}) : super(key: key);
+  final int currentId;
+  MainPage(this.currentId, {Key? key}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -15,7 +18,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: page.pageList[this._selectedPageIdx]!.pageWidget,
+      body: _getBodyPage(),
       bottomNavigationBar: SizedBox(
         height: 60.0,
         child: _buildBottomNavigationBar(),
@@ -25,10 +28,34 @@ class _MainPageState extends State<MainPage> {
 
   AppBar _buildAppBar() {
     return AppBar(
-      title: Text('${page.pageList[this._selectedPageIdx]!.pageName}'),
+      title: _getAppbarTitle(),
       automaticallyImplyLeading: false,
       elevation: 0.0,
     );
+  }
+
+  Widget _getAppbarTitle() {
+    if (_selectedPageIdx == 0) {
+      return Text('friend page');
+    }
+    else if (_selectedPageIdx == 1) {
+      return Text('chatting page');
+    }
+    else {
+      return Text('credit page');
+    }
+  }
+
+  Widget _getBodyPage() {
+    if (_selectedPageIdx == 0) {
+      return FriendPage(widget.currentId);
+    }
+    else if (_selectedPageIdx == 1) {
+      return ChattingPage(widget.currentId);
+    }
+    else {
+      return CreditPage();
+    }
   }
 
   BottomNavigationBar _buildBottomNavigationBar() {

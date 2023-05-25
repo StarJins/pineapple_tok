@@ -1,11 +1,14 @@
 class Profile {
-  late String picturePath;
+  late String thumbnail;
+  late String background;
   late String name;
+  late String comment;
 
-  Profile(this.picturePath, this.name);
+  Profile(this.thumbnail, this.background, this.name, this.comment);
 
   @override
   String toString() {
-    return 'path: $picturePath, name: $name';
+    return 'thumbnail: $thumbnail, background: $background,'
+      'name: $name, comment: $comment';
   }
 }

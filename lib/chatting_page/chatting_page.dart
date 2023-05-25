@@ -3,7 +3,8 @@ import 'package:page_transition/page_transition.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
 
 class ChattingPage extends StatefulWidget {
-  const ChattingPage({Key? key}) : super(key: key);
+  final int currentId;
+  const ChattingPage(this.currentId, {Key? key}) : super(key: key);
 
   @override
   State<ChattingPage> createState() => _ChattingPageState();
@@ -45,7 +46,7 @@ class _ChattingPageState extends State<ChattingPage> {
         children: [
           Expanded(
             child: ListView(
-              children: _buildFriendList(context),
+              children: _buildChattingRoomList(context),
             ),
           ),
         ],
@@ -53,7 +54,7 @@ class _ChattingPageState extends State<ChattingPage> {
     );
   }
 
-  List<Widget> _buildFriendList(BuildContext context) {
+  List<Widget> _buildChattingRoomList(BuildContext context) {
     if (this.chattingList != null) {
       return List.generate(
         this.chattingList!.length,

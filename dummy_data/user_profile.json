@@ -1,0 +1,32 @@
+{
+  "user_profile": [
+    {
+      "id": 1,
+      "thumbnail": "",
+      "background": "",
+      "name": "테스트",
+      "comment": "테스트 유저 입니다"
+    },
+    {
+      "id": 2,
+      "thumbnail": "",
+      "background": "",
+      "name": "ㄱㅈㅌ",
+      "comment": "반갑습니다~"
+    },
+    {
+      "id": 3,
+      "thumbnail": "",
+      "background": "",
+      "name": "ㅅㅎㅇ",
+      "comment": "010-1234-5678"
+    },
+    {
+      "id": 4,
+      "thumbnail": "",
+      "background": "",
+      "name": "ㄱㅂㄱ",
+      "comment": "3대 5000톤"
+    }
+  ]
+}

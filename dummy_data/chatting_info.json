@@ -1,0 +1,54 @@
+{
+  "chatting_info": [
+    {
+      "id": 1,
+      "type": 2,
+      "name": "단체방1",
+      "count": 3,
+      "lastChat": "하이",
+      "lastChatTime": "10:55",
+      "member": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "id": 2,
+      "type": 2,
+      "name": "단체방2",
+      "count": 3,
+      "lastChat": "뭐함?",
+      "lastChatTime": "12:55",
+      "member": [
+        1,
+        3,
+        4
+      ]
+    },
+    {
+      "id": 3,
+      "type": 1,
+      "name": "개인방1",
+      "count": 2,
+      "lastChat": "하이",
+      "lastChatTime": "15:20",
+      "member": [
+        2,
+        4
+      ]
+    },
+    {
+      "id": 4,
+      "type": 1,
+      "name": "개인방2",
+      "count": 2,
+      "lastChat": "내일 만남?",
+      "lastChatTime": "10:55",
+      "member": [
+        1,
+        3
+      ]
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:pineapple_tok/data/profile.dart';
 
 class ProfilePage extends StatelessWidget {
-  final dynamic profileInfo;
+  final Profile profileInfo;
   const ProfilePage({Key? key, required this.profileInfo}) : super(key: key);
 
   @override
@@ -50,7 +51,7 @@ class ProfilePage extends StatelessWidget {
     return Column(
       children: [
         Image.asset(
-          this.profileInfo.picturePath,
+          this.profileInfo.thumbnail,
           height: 150.0,
           width: 150.0,
         ),
@@ -62,6 +63,13 @@ class ProfilePage extends StatelessWidget {
           style: TextStyle(
             fontSize: 25.0,
             fontWeight: FontWeight.bold,
+            color: Colors.black54,
+          ),
+        ),
+        Text(
+          '${this.profileInfo.comment}',
+          style: TextStyle(
+            fontSize: 15.0,
             color: Colors.black54,
           ),
         ),

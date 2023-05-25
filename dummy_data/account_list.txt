@@ -1,8 +1,0 @@
-{
-  "accountList": [
-    {
-      "id": "test",
-      "password":"1234"
-    }
-  ]
-}
