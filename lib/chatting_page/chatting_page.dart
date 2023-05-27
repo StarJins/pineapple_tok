@@ -34,7 +34,7 @@ class _ChattingPageState extends State<ChattingPage> {
   }
 
   Future<List<ChattingRoom>> _loadChattingRoomList() async {
-    ChattingRoomHandler c = ChattingRoomHandler();
+    ChattingRoomHandler c = ChattingRoomHandler(widget.currentId);
     return c.updateChattingRoomList();
   }
 
@@ -59,18 +59,18 @@ class _ChattingPageState extends State<ChattingPage> {
       return List.generate(
         this.chattingList!.length,
         (index) => ListTile(
-          leading: Image.asset(this.chattingList![index].picturePath),
+          leading: Image.asset(this.chattingList![index].thumbnail),
           title: Row(
             children: [
               Text(this.chattingList![index].chattingRoomName),
               if (this.chattingList![index].chattingRoomType == ChattingType.group) ... [
-                SizedBox(width: 10.0,),
+                SizedBox(width: 5.0,),
                 Text(this.chattingList![index].numOfPeople.toString()),
               ]
             ],
           ),
           subtitle: Text(this.chattingList![index].lastChat),
-          trailing: Text(this.chattingList![index].lastTime),
+          trailing: Text(this.chattingList![index].lastChatTime),
           onTap: () {},
         )
       );
