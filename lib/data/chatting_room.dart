@@ -50,13 +50,13 @@ class ChattingRoomHandler {
     return chattingList;
   }
 
-  Future<Tuple2<String, String>> getUserThumbnailAndName(int otherUserId) async {
+  Future<Tuple2<String, String>> getUserThumbnailAndName(int userId) async {
     String jsonData = await rootBundle.loadString('dummy_data/user_profile.json');
     dynamic parsingData = jsonDecode(jsonData);
 
     String thumbnail = "", name = "";
     for (var x in parsingData['user_profile']) {
-      if (x['id'] == otherUserId) {
+      if (x['id'] == userId) {
         thumbnail = x['thumbnail'];
         if (thumbnail == '') {
           thumbnail = 'assets/basic_profile_picture.png';
@@ -67,6 +67,16 @@ class ChattingRoomHandler {
 
     Tuple2<String, String> userInfo = Tuple2<String, String>(thumbnail, name);
     return userInfo;
+  }
+
+  Future<Tuple2<String, String>> setThumbnailAndNameValue(List<int> members) async {
+    int otherUserId = -1;
+    for (var y in members) {
+      if (y != this.currentUserId) {
+        otherUserId = y;
+      }
+    }
+    return await getUserThumbnailAndName(otherUserId);
   }
 
   Future<List<ChattingRoom>> updateChattingRoomList() async {
@@ -80,6 +90,11 @@ class ChattingRoomHandler {
       if (chattingRoomIdList.contains(x['id'])) {
         int id = x['id'];
         ChattingType chattingRoomType = ChattingType.values[x['type']];
+        String thumbnail = x['thumbnail'];
+        if (thumbnail == '') {
+          thumbnail = 'assets/basic_profile_picture.png';
+        }
+        String chattingRoomName = x['name'];
         int numOfPeople = x['count'];
         String lastChat = x['lastChat'];
         String lastChatTime = x['lastChatTime'];
@@ -88,24 +103,10 @@ class ChattingRoomHandler {
           members.add(y);
         }
 
-        String thumbnail = "", chattingRoomName = "";
         if (chattingRoomType == ChattingType.individual) {
-          int otherUserId = -1;
-          for (var y in members) {
-            if (y != this.currentUserId) {
-              otherUserId = y;
-            }
-          }
-          Tuple2<String, String> userInfo = await getUserThumbnailAndName(otherUserId);
+          Tuple2<String, String> userInfo = await setThumbnailAndNameValue(members);
           thumbnail = userInfo.item1;
           chattingRoomName = userInfo.item2;
-        }
-        else {
-          thumbnail = x['thumbnail'];
-          if (thumbnail == '') {
-            thumbnail = 'assets/basic_profile_picture.png';
-          }
-          chattingRoomName = x['name'];
         }
 
         chattingRoomList.add(ChattingRoom.getChattingRoom(id, chattingRoomType,
