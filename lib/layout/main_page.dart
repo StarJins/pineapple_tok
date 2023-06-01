@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pineapple_tok/chatting_page/chatting_page.dart';
+import 'package:pineapple_tok/chatting_page/chatting_list_page.dart';
 import 'package:pineapple_tok/credit_page/credit_page.dart';
 import 'package:pineapple_tok/friend_page/friend_page.dart';
 

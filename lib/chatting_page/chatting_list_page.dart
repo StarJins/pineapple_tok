@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
+import 'package:pineapple_tok/chatting_page/chatting_room_page.dart';
 
 class ChattingPage extends StatefulWidget {
   final int currentId;
@@ -71,7 +72,14 @@ class _ChattingPageState extends State<ChattingPage> {
           ),
           subtitle: Text(this.chattingList![index].lastChat),
           trailing: Text(this.chattingList![index].lastChatTime),
-          onTap: () {},
+          onTap: () {
+            Navigator.of(context).push(
+              PageTransition(
+                type: PageTransitionType.bottomToTop,
+                child: ChattingRoomPage(chattingInfo: this.chattingList![index],),
+              ),
+            );
+          },
         )
       );
     } else {
