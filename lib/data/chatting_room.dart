@@ -24,6 +24,10 @@ class ChattingRoom {
   factory ChattingRoom.getChattingRoom(int id, ChattingType chattingRoomType,
     String thumbnail, String chattingRoomName, int numOfPeople, String lastChat,
     String lastChatTime, List<int> members) {
+    if (thumbnail == '') {
+      thumbnail = 'assets/basic_profile_picture.png';
+    }
+
     return ChattingRoom(id, chattingRoomType, thumbnail, chattingRoomName,
       numOfPeople, lastChat, lastChatTime, members);
   }
@@ -91,9 +95,6 @@ class ChattingRoomHandler {
         int id = x['id'];
         ChattingType chattingRoomType = ChattingType.values[x['type']];
         String thumbnail = x['thumbnail'];
-        if (thumbnail == '') {
-          thumbnail = 'assets/basic_profile_picture.png';
-        }
         String chattingRoomName = x['name'];
         int numOfPeople = x['count'];
         String lastChat = x['lastChat'];

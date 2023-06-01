@@ -8,6 +8,10 @@ class MyProfile extends Profile {
       : super(thumbnail, background, name, comment);
 
   factory MyProfile.getMyProfile(String thumbnail, String background, String name, String comment) {
+    if (thumbnail == '') {
+      thumbnail = 'assets/basic_profile_picture.png';
+    }
+
     return MyProfile(thumbnail, background, name, comment);
   }
 }
@@ -28,9 +32,6 @@ class MyProfileHandler {
     for (var x in parsingData['user_profile']) {
       if (x['id'] == this.currentId) {
         thumbnail = x['thumbnail'];
-        if (thumbnail == '') {
-          thumbnail = 'assets/basic_profile_picture.png';
-        }
         background = x['background'];
         name = x['name'];
         comment = x['comment'];

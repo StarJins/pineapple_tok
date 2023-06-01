@@ -8,6 +8,10 @@ class Friend extends Profile {
       : super(thumbnail, background, name, comment);
 
   factory Friend.getFriendProfile(String thumbnail, String background, String name, String comment) {
+    if (thumbnail == '') {
+      thumbnail = 'assets/basic_profile_picture.png';
+    }
+
     return Friend(thumbnail, background, name, comment);
   }
 }
@@ -43,9 +47,6 @@ class FriendHandler {
     for (var x in parsingData['user_profile']) {
       if (friendIdList.contains(x['id'])) {
         String thumbnail = x['thumbnail'];
-        if (thumbnail == '') {
-          thumbnail = 'assets/basic_profile_picture.png';
-        }
         String background = x['background'];
         String name = x['name'];
         String comment = x['comment'];
