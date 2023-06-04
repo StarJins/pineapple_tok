@@ -76,7 +76,10 @@ class _ChattingPageState extends State<ChattingPage> {
             Navigator.of(context).push(
               PageTransition(
                 type: PageTransitionType.bottomToTop,
-                child: ChattingRoomPage(chattingInfo: this.chattingList![index],),
+                child: ChattingRoomPage(
+                  currentUserId: widget.currentId,
+                  chattingInfo: this.chattingList![index],
+                ),
               ),
             );
           },

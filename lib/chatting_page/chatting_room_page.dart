@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/data/chatting_comment.dart';
+import 'package:chat_bubbles/chat_bubbles.dart';
 
 class ChattingRoomPage extends StatefulWidget {
+  final int currentUserId;
   final ChattingRoom chattingInfo;
-  const ChattingRoomPage({Key? key, required this.chattingInfo}) : super(key: key);
+  const ChattingRoomPage({Key? key, required this.currentUserId, required this.chattingInfo}) : super(key: key);
 
   @override
   State<ChattingRoomPage> createState() => _ChattingRoomPageState();
@@ -41,6 +43,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
         title: _getAppbarTitle(),
       ),
       body: _buildProfileBody(),
+      backgroundColor: Colors.lightBlueAccent,
     );
   }
 
@@ -58,8 +61,12 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     return Column(
       children: [
         Expanded(
-          child: ListView(
-            children: _buildChattingRoom(context),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ListView(
+              shrinkWrap: true,
+              children: _buildChattingRoom(context),
+            ),
           ),
         ),
       ],
@@ -70,7 +77,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     if (this.chattingComments != null) {
       List<Widget> tileList = List.generate(
           this.chattingComments!.length, (index) =>
-          makeChattingCommentTile(this.chattingComments![index])
+          makeChattingCommentWidget(this.chattingComments![index])
       );
 
       return tileList;
@@ -79,13 +86,72 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     }
   }
 
-  ListTile makeChattingCommentTile(ChattingComment comment) {
-    return ListTile(
-      leading: Image.asset(comment.thumbnail),
-      title: Text(comment.name),
-      subtitle: Text(comment.comment),
-      trailing: Text(comment.time),
-      onTap: () {},
+  Widget makeChattingCommentWidget(ChattingComment comment) {
+    List<Widget> RowChildren = [];
+    MainAxisAlignment alignment = MainAxisAlignment.start;
+    if (widget.currentUserId == comment.id) {
+      RowChildren.add(Text(comment.time));
+      RowChildren.add(_messageBody(comment));
+      RowChildren.add(_messageThumbnail(comment));
+      alignment = MainAxisAlignment.end;
+    }
+    else {
+      RowChildren.add(_messageThumbnail(comment));
+      RowChildren.add(_messageBody(comment));
+      RowChildren.add(Text(comment.time));
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        child: Row(
+          mainAxisAlignment: alignment,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: RowChildren,
+        ),
+      ),
+    );
+  }
+
+  Widget _messageThumbnail(ChattingComment comment) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 7.0),
+      child: Image.asset(
+        comment.thumbnail,
+        width: 50.0,
+      ),
+    );
+  }
+
+  Column _messageBody(ChattingComment comment) {
+    bool isSender = false;
+    CrossAxisAlignment alignment = CrossAxisAlignment.start;
+    EdgeInsets padding = EdgeInsets.only(left: 15.0);
+
+    if (widget.currentUserId == comment.id) {
+      isSender = true;
+      alignment = CrossAxisAlignment.end;
+      padding = EdgeInsets.only(right: 15.0);
+    }
+
+    return Column(
+      crossAxisAlignment: alignment,
+      children: [
+        Padding(
+          padding: padding,
+          child: Text(comment.name),
+        ),
+        BubbleSpecialOne(
+          text: comment.comment,
+          color: Colors.white,
+          tail: true,
+          textStyle: TextStyle(
+              color: Colors.black,
+              fontSize: 20
+          ),
+          isSender: isSender,
+        ),
+      ],
     );
   }
 }
