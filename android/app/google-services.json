@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "986514507040",
+    "project_id": "pineapple-tok-12340717",
+    "storage_bucket": "pineapple-tok-12340717.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986514507040:android:012af30c5087ca46180345",
+        "android_client_info": {
+          "package_name": "com.example.pineapple_tok"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "986514507040-git0no6bkb4gf7rf3c19u8m2cglpu1ql.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9ukq5sxDimoe5G5iDyrT9ffxZjtUxLLs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "986514507040-git0no6bkb4gf7rf3c19u8m2cglpu1ql.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "986514507040-qlr2o64i6nknvjj6b7tluihsa4au1nq3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.pineappleTok"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
