@@ -1,28 +1,28 @@
 {
   "user_profile": [
     {
-      "id": 1,
+      "uid": "Cvfkl6Qk1PceIZpILdtzX3rMhcT2",
       "thumbnail": "",
       "background": "",
       "name": "테스트",
       "comment": "테스트 유저 입니다"
     },
     {
-      "id": 2,
+      "uid": "UnorDKOFoxcsyojr4idI1rt1KQj1",
       "thumbnail": "",
       "background": "",
       "name": "ㄱㅈㅌ",
       "comment": "반갑습니다~"
     },
     {
-      "id": 3,
+      "uid": "t8rxVRpIrIPikQ088vTkHuzLGF73",
       "thumbnail": "",
       "background": "",
       "name": "ㅅㅎㅇ",
       "comment": "010-1234-5678"
     },
     {
-      "id": 4,
+      "uid": "SwtL7pfU6rSq2KTIbx96dADlg7o1",
       "thumbnail": "",
       "background": "",
       "name": "ㄱㅂㄱ",

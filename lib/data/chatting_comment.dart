@@ -3,16 +3,15 @@ import 'dart:convert';
 import 'dart:async';
 
 class ChattingComment {
-  int id;
-  String name, thumbnail, comment, time;
-  ChattingComment(this.id, this.name, this.thumbnail, this.comment, this.time);
+  String uid, name, thumbnail, comment, time;
+  ChattingComment(this.uid, this.name, this.thumbnail, this.comment, this.time);
 
-  factory ChattingComment.getChattingComment(int id, String name,
+  factory ChattingComment.getChattingComment(String uid, String name,
     String thumbnail, String comment, String time) {
     if (thumbnail == '') {
       thumbnail = 'assets/basic_profile_picture.png';
     }
-    return ChattingComment(id, name, thumbnail, comment, time);
+    return ChattingComment(uid, name, thumbnail, comment, time);
   }
 }
 
@@ -29,13 +28,13 @@ class ChattingCommentHandler {
     for (var x in parsingData['chatting_comment']) {
       if (x['id'] == this.currentChattingId) {
         for (var y in x['chat_list']) {
-          int id = y['id'];
+          String uid = y['uid'];
           String name = y['name'];
           String thumbnail = y['thumbnail'];
           String comment = y['comment'];
           String time = y['time'];
           chattingComments.add(ChattingComment.getChattingComment(
-            id, name, thumbnail, comment, time
+            uid, name, thumbnail, comment, time
           ));
         }
       }

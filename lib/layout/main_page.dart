@@ -4,8 +4,7 @@ import 'package:pineapple_tok/credit_page/credit_page.dart';
 import 'package:pineapple_tok/friend_page/friend_page.dart';
 
 class MainPage extends StatefulWidget {
-  final int currentId;
-  MainPage(this.currentId, {Key? key}) : super(key: key);
+  MainPage({Key? key}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -48,10 +47,10 @@ class _MainPageState extends State<MainPage> {
 
   Widget _getBodyPage() {
     if (_selectedPageIdx == 0) {
-      return FriendPage(widget.currentId);
+      return FriendPage();
     }
     else if (_selectedPageIdx == 1) {
-      return ChattingPage(widget.currentId);
+      return ChattingPage();
     }
     else {
       return CreditPage();

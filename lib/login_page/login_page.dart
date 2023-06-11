@@ -210,8 +210,7 @@ class _LoginFormState extends State<LoginForm> {
       return false;
     }
     else {
-      int currentId = account.getUserId();
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainPage(currentId)));
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainPage()));
       return true;
     }
   }

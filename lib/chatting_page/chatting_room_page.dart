@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/data/chatting_comment.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 
 class ChattingRoomPage extends StatefulWidget {
-  final int currentUserId;
   final ChattingRoom chattingInfo;
-  const ChattingRoomPage({Key? key, required this.currentUserId, required this.chattingInfo}) : super(key: key);
+  const ChattingRoomPage({Key? key, required this.chattingInfo}) : super(key: key);
 
   @override
   State<ChattingRoomPage> createState() => _ChattingRoomPageState();
 }
 
 class _ChattingRoomPageState extends State<ChattingRoomPage> {
+  final _authentication = FirebaseAuth.instance;
+
   List<ChattingComment>? chattingComments = null;
 
   @override
@@ -87,9 +89,11 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
   }
 
   Widget makeChattingCommentWidget(ChattingComment comment) {
+    final curUser = _authentication.currentUser;
+
     List<Widget> RowChildren = [];
     MainAxisAlignment alignment = MainAxisAlignment.start;
-    if (widget.currentUserId == comment.id) {
+    if (curUser!.uid == comment.uid) {
       RowChildren.add(Text(comment.time));
       RowChildren.add(_messageBody(comment));
       RowChildren.add(_messageThumbnail(comment));
@@ -124,11 +128,13 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
   }
 
   Column _messageBody(ChattingComment comment) {
+    final curUser = _authentication.currentUser;
+
     bool isSender = false;
     CrossAxisAlignment alignment = CrossAxisAlignment.start;
     EdgeInsets padding = EdgeInsets.only(left: 15.0);
 
-    if (widget.currentUserId == comment.id) {
+    if (curUser!.uid == comment.uid) {
       isSender = true;
       alignment = CrossAxisAlignment.end;
       padding = EdgeInsets.only(right: 15.0);

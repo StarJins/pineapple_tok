@@ -1,33 +1,33 @@
 {
   "user_friends": [
     {
-      "id": 1,
+      "uid": "Cvfkl6Qk1PceIZpILdtzX3rMhcT2",
       "friends": [
-        2,
-        3
+        "UnorDKOFoxcsyojr4idI1rt1KQj1",
+        "t8rxVRpIrIPikQ088vTkHuzLGF73"
       ]
     },
     {
-      "id": 2,
+      "uid": "UnorDKOFoxcsyojr4idI1rt1KQj1",
       "friends": [
-        1,
-        3,
-        4
+        "Cvfkl6Qk1PceIZpILdtzX3rMhcT2",
+        "t8rxVRpIrIPikQ088vTkHuzLGF73",
+        "SwtL7pfU6rSq2KTIbx96dADlg7o1"
       ]
     },
     {
-      "id": 3,
+      "uid": "t8rxVRpIrIPikQ088vTkHuzLGF73",
       "friends": [
-        1,
-        2,
-        4
+        "Cvfkl6Qk1PceIZpILdtzX3rMhcT2",
+        "UnorDKOFoxcsyojr4idI1rt1KQj1",
+        "SwtL7pfU6rSq2KTIbx96dADlg7o1"
       ]
     },
     {
-      "id": 4,
+      "uid": "SwtL7pfU6rSq2KTIbx96dADlg7o1",
       "friends": [
-        2,
-        3
+        "UnorDKOFoxcsyojr4idI1rt1KQj1",
+        "t8rxVRpIrIPikQ088vTkHuzLGF73"
       ]
     }
   ]

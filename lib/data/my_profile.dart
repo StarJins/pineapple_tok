@@ -1,7 +1,8 @@
-import 'package:flutter/services.dart';
 import 'dart:convert';
-import 'package:pineapple_tok/data/profile.dart';
 import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pineapple_tok/data/profile.dart';
 
 class MyProfile extends Profile {
   MyProfile(String thumbnail, String background, String name, String comment)
@@ -17,11 +18,11 @@ class MyProfile extends Profile {
 }
 
 class MyProfileHandler {
-  final currentId;
-
-  MyProfileHandler(this.currentId);
+  final _authentication = FirebaseAuth.instance;
 
   Future<MyProfile> updateMyProfile() async {
+    final curUser = _authentication.currentUser;
+
     String jsonData = await rootBundle.loadString('dummy_data/user_profile.json');
     dynamic parsingData = jsonDecode(jsonData);
 
@@ -30,7 +31,7 @@ class MyProfileHandler {
     String name = '';
     String comment = '';
     for (var x in parsingData['user_profile']) {
-      if (x['id'] == this.currentId) {
+      if (x['uid'] == curUser!.uid) {
         thumbnail = x['thumbnail'];
         background = x['background'];
         name = x['name'];

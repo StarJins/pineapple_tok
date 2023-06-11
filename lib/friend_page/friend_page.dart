@@ -6,8 +6,7 @@ import 'package:pineapple_tok/data/profile.dart';
 import 'package:pineapple_tok/friend_page/profile_page.dart';
 
 class FriendPage extends StatefulWidget {
-  final int currentId;
-  const FriendPage(this.currentId, {Key? key}) : super(key: key);
+  const FriendPage({Key? key}) : super(key: key);
 
   @override
   State<FriendPage> createState() => _FriendPageState();
@@ -39,12 +38,12 @@ class _FriendPageState extends State<FriendPage> {
   }
 
   Future<MyProfile> _loadMyProfile() async {
-    MyProfileHandler p = MyProfileHandler(widget.currentId);
+    MyProfileHandler p = MyProfileHandler();
     return p.updateMyProfile();
   }
 
   Future<List<Friend>> _loadFriendList() async {
-    FriendHandler f = FriendHandler(widget.currentId);
+    FriendHandler f = FriendHandler();
     return f.updateFriendList();
   }
 

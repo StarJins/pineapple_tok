@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pineapple_tok/data/profile.dart';
 
 class Friend extends Profile {
@@ -17,17 +18,17 @@ class Friend extends Profile {
 }
 
 class FriendHandler {
-  final currentId;
+  final _authentication = FirebaseAuth.instance;
 
-  FriendHandler(this.currentId);
+  Future<List<String>> getFriendsList() async {
+    final curUser = _authentication.currentUser;
 
-  Future<List<int>> getFriendsList() async {
     String jsonData = await rootBundle.loadString('dummy_data/user_friends.json');
     dynamic parsingData = jsonDecode(jsonData);
 
-    List<int> friendList = [];
+    List<String> friendList = [];
     for (var x in parsingData['user_friends']) {
-      if (x['id'] == this.currentId) {
+      if (x['uid'] == curUser!.uid) {
         for (var y in x['friends']) {
           friendList.add(y);
         }
@@ -41,11 +42,11 @@ class FriendHandler {
     String jsonData = await rootBundle.loadString('dummy_data/user_profile.json');
     dynamic parsingData = jsonDecode(jsonData);
 
-    List<int> friendIdList = await getFriendsList();
+    List<String> friendIdList = await getFriendsList();
 
     List<Friend> friendList = [];
     for (var x in parsingData['user_profile']) {
-      if (friendIdList.contains(x['id'])) {
+      if (friendIdList.contains(x['uid'])) {
         String thumbnail = x['thumbnail'];
         String background = x['background'];
         String name = x['name'];

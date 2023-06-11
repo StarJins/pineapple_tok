@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'dart:convert';
 import 'dart:async';
 import 'package:tuple/tuple.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 enum ChattingType {
   individual, // 0
@@ -16,14 +17,14 @@ class ChattingRoom {
   int numOfPeople;
   String lastChat;
   String lastChatTime;
-  List<int> members;
+  List<String> members;
 
   ChattingRoom(this.id, this.chattingRoomType, this.thumbnail, this.chattingRoomName,
     this.numOfPeople, this.lastChat, this.lastChatTime, this.members);
 
   factory ChattingRoom.getChattingRoom(int id, ChattingType chattingRoomType,
     String thumbnail, String chattingRoomName, int numOfPeople, String lastChat,
-    String lastChatTime, List<int> members) {
+    String lastChatTime, List<String> members) {
     if (thumbnail == '') {
       thumbnail = 'assets/basic_profile_picture.png';
     }
@@ -34,17 +35,17 @@ class ChattingRoom {
 }
 
 class ChattingRoomHandler {
-  final currentUserId;
-
-  ChattingRoomHandler(this.currentUserId);
+  final _authentication = FirebaseAuth.instance;
 
   Future<List<int>> getChattingList() async {
+    final curUser = _authentication.currentUser;
+
     String jsonData = await rootBundle.loadString('dummy_data/user_chatting.json');
     dynamic parsingData = jsonDecode(jsonData);
 
     List<int> chattingList = [];
     for (var x in parsingData['user_chatting']) {
-      if (x['id'] == this.currentUserId) {
+      if (x['uid'] == curUser!.uid) {
         for (var y in x['chatting_rooms']) {
           chattingList.add(y);
         }
@@ -54,13 +55,13 @@ class ChattingRoomHandler {
     return chattingList;
   }
 
-  Future<Tuple2<String, String>> getUserThumbnailAndName(int userId) async {
+  Future<Tuple2<String, String>> getUserThumbnailAndName(String uid) async {
     String jsonData = await rootBundle.loadString('dummy_data/user_profile.json');
     dynamic parsingData = jsonDecode(jsonData);
 
     String thumbnail = "", name = "";
     for (var x in parsingData['user_profile']) {
-      if (x['id'] == userId) {
+      if (x['uid'] == uid) {
         thumbnail = x['thumbnail'];
         if (thumbnail == '') {
           thumbnail = 'assets/basic_profile_picture.png';
@@ -73,14 +74,16 @@ class ChattingRoomHandler {
     return userInfo;
   }
 
-  Future<Tuple2<String, String>> setThumbnailAndNameValue(List<int> members) async {
-    int otherUserId = -1;
+  Future<Tuple2<String, String>> setThumbnailAndNameValue(List<String> members) async {
+    final curUser = _authentication.currentUser;
+
+    String otherUid = "";
     for (var y in members) {
-      if (y != this.currentUserId) {
-        otherUserId = y;
+      if (y != curUser!.uid) {
+        otherUid = y;
       }
     }
-    return await getUserThumbnailAndName(otherUserId);
+    return await getUserThumbnailAndName(otherUid);
   }
 
   Future<List<ChattingRoom>> updateChattingRoomList() async {
@@ -99,7 +102,7 @@ class ChattingRoomHandler {
         int numOfPeople = x['count'];
         String lastChat = x['lastChat'];
         String lastChatTime = x['lastChatTime'];
-        List<int> members = [];
+        List<String> members = [];
         for (var y in x['member']) {
           members.add(y);
         }

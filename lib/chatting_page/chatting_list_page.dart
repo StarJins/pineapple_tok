@@ -4,8 +4,7 @@ import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/chatting_page/chatting_room_page.dart';
 
 class ChattingPage extends StatefulWidget {
-  final int currentId;
-  const ChattingPage(this.currentId, {Key? key}) : super(key: key);
+  const ChattingPage({Key? key}) : super(key: key);
 
   @override
   State<ChattingPage> createState() => _ChattingPageState();
@@ -35,7 +34,7 @@ class _ChattingPageState extends State<ChattingPage> {
   }
 
   Future<List<ChattingRoom>> _loadChattingRoomList() async {
-    ChattingRoomHandler c = ChattingRoomHandler(widget.currentId);
+    ChattingRoomHandler c = ChattingRoomHandler();
     return c.updateChattingRoomList();
   }
 
@@ -77,7 +76,6 @@ class _ChattingPageState extends State<ChattingPage> {
               PageTransition(
                 type: PageTransitionType.bottomToTop,
                 child: ChattingRoomPage(
-                  currentUserId: widget.currentId,
                   chattingInfo: this.chattingList![index],
                 ),
               ),
