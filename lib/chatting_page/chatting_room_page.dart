@@ -93,16 +93,17 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
 
     List<Widget> RowChildren = [];
     MainAxisAlignment alignment = MainAxisAlignment.start;
+
     if (curUser!.uid == comment.uid) {
       RowChildren.add(Text(comment.time));
       RowChildren.add(_messageBody(comment));
-      RowChildren.add(_messageThumbnail(comment));
       alignment = MainAxisAlignment.end;
     }
     else {
       RowChildren.add(_messageThumbnail(comment));
       RowChildren.add(_messageBody(comment));
       RowChildren.add(Text(comment.time));
+      alignment = MainAxisAlignment.start;
     }
 
     return Padding(
@@ -131,11 +132,13 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     final curUser = _authentication.currentUser;
 
     bool isSender = false;
+    String name = comment.name;
     CrossAxisAlignment alignment = CrossAxisAlignment.start;
     EdgeInsets padding = EdgeInsets.only(left: 15.0);
 
     if (curUser!.uid == comment.uid) {
       isSender = true;
+      name = "";
       alignment = CrossAxisAlignment.end;
       padding = EdgeInsets.only(right: 15.0);
     }
@@ -145,7 +148,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
       children: [
         Padding(
           padding: padding,
-          child: Text(comment.name),
+          child: Text(name),
         ),
         BubbleSpecialOne(
           text: comment.comment,
