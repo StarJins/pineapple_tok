@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/data/chatting_comment.dart';
-import 'package:chat_bubbles/chat_bubbles.dart';
+import 'package:pineapple_tok/chatting_page/chat_bubble.dart';
 
 class ChattingRoomPage extends StatefulWidget {
   final ChattingRoom chattingInfo;
@@ -128,7 +128,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     );
   }
 
-  Column _messageBody(ChattingComment comment) {
+  Widget _messageBody(ChattingComment comment) {
     final curUser = _authentication.currentUser;
 
     bool isSender = false;
@@ -150,14 +150,8 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
           padding: padding,
           child: Text(name),
         ),
-        BubbleSpecialOne(
-          text: comment.comment,
-          color: Colors.white,
-          tail: true,
-          textStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 20
-          ),
+        ChatBubble(
+          comment: comment.comment,
           isSender: isSender,
         ),
       ],

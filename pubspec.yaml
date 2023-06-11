@@ -38,7 +38,6 @@ dependencies:
   path_provider: ^2.0.14
   page_transition: ^2.0.9
   tuple: ^2.0.1
-  chat_bubbles: ^1.4.1
   firebase_core: ^2.13.1
   firebase_auth: ^4.6.2
 
