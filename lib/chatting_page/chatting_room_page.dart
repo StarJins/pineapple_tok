@@ -120,7 +120,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
 
   Widget _messageThumbnail(ChattingComment comment) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 7.0),
+      padding: const EdgeInsets.only(bottom: 5.0),
       child: Image.asset(
         comment.thumbnail,
         width: 50.0,
