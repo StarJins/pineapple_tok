@@ -13,6 +13,7 @@ class FriendPage extends StatefulWidget {
 }
 
 class _FriendPageState extends State<FriendPage> {
+  bool isDataLoading = true;
   MyProfile? myProfile = null;
   List<Friend>? friendList = null;
 
@@ -34,55 +35,79 @@ class _FriendPageState extends State<FriendPage> {
   void _loadData() async {
     this.myProfile = await this._loadMyProfile();
     this.friendList = await this._loadFriendList();
-    setState(() {});
+    setState(() {
+      isDataLoading = false;
+    });
   }
 
-  Future<MyProfile> _loadMyProfile() async {
+  Future<MyProfile?> _loadMyProfile() async {
     MyProfileHandler p = MyProfileHandler();
     return p.updateMyProfile();
   }
 
-  Future<List<Friend>> _loadFriendList() async {
+  Future<List<Friend>?> _loadFriendList() async {
     FriendHandler f = FriendHandler();
     return f.updateFriendList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          if (this.friendList != null)...[
+    if (this.isDataLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    else {
+      return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
             Expanded(
               child: ListView(
-                children: _buildFriendList(context),
+                children: _buildProfileList(context),
               ),
             ),
-          ]
-          else...[
-            SizedBox(),
-          ]
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
   }
 
   Widget _buildMyProfile(BuildContext context) {
     return makeProfileTile(this.myProfile!);
   }
 
-  List<Widget> _buildFriendList(BuildContext context) {
-    List<Widget> tileList =  List.generate(
+  List<Widget> _buildFriendProfiles(BuildContext context) {
+    List<Widget> friendList = List.generate(
       this.friendList!.length,
       (index) => makeProfileTile(this.friendList![index])
     );
+
+    return friendList;
+  }
+
+  List<Widget> _buildProfileList(BuildContext context) {
+    if (this.myProfile == null || this.friendList == null) {
+      return [
+        Center(
+          child: Text(
+            'data load error, please re-load this page',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+          ),
+        )
+      ];
+    }
+
+    List<Widget> tileList = [];
+    tileList = _buildFriendProfiles(context);
     tileList.insert(0, Divider(
       height: 20,
       thickness: 2.0,
     ));
     tileList.insert(0, _buildMyProfile(context));
-
     return tileList;
   }
 

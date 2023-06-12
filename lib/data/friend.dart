@@ -40,7 +40,7 @@ class FriendHandler {
     return friendList;
   }
 
-  Future<List<Friend>> updateFriendList() async {
+  Future<List<Friend>?> updateFriendList() async {
     final collectionRef = _firestore.collection('user').doc('Pcb6GpXLiBuBQtXXG1Vc').collection('profile');
     final querySnapshot = await collectionRef.get();
 
@@ -48,7 +48,7 @@ class FriendHandler {
 
     List<Friend> friendList = [];
     for (var doc in querySnapshot.docs) {
-      if (friendIdList.contains(doc['uid'])) {
+      if (friendIdList.contains(doc.id)) {
         String thumbnail = doc['thumbnail'];
         String background = doc['background'];
         String name = doc['name'];
@@ -56,6 +56,12 @@ class FriendHandler {
         friendList.add(Friend.getFriendProfile(thumbnail, background, name, comment));
       }
     }
-    return friendList;
+
+    if (friendList.length == 0) {
+      return null;
+    }
+    else {
+      return friendList;
+    }
   }
 }

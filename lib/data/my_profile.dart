@@ -20,27 +20,22 @@ class MyProfileHandler {
   final _authentication = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
-  Future<MyProfile> updateMyProfile() async {
+  Future<MyProfile?> updateMyProfile() async {
     final curUser = _authentication.currentUser;
 
-    final collectionRef = _firestore.collection('user').doc('Pcb6GpXLiBuBQtXXG1Vc').collection('profile');
-    final querySnapshot = await collectionRef.get();
+    final docRef = _firestore.collection('user').doc('Pcb6GpXLiBuBQtXXG1Vc')
+      .collection('profile').doc(curUser!.uid);
+    final doc = await docRef.get();
 
-    String thumbnail = '';
-    String background = '';
-    String name = '';
-    String comment = '';
-    for (var doc in querySnapshot.docs) {
-      if (doc['uid'] == curUser!.uid) {
-        thumbnail = doc['thumbnail'];
-        background = doc['background'];
-        name = doc['name'];
-        comment = doc['comment'];
-
-        break;
-      }
+    if (doc.exists) {
+      String thumbnail = doc['thumbnail'];
+      String background = doc['background'];
+      String name = doc['name'];
+      String comment = doc['comment'];
+      return MyProfile.getMyProfile(thumbnail, background, name, comment);
     }
-
-    return MyProfile.getMyProfile(thumbnail, background, name, comment);
+    else {
+      return null;
+    }
   }
 }
