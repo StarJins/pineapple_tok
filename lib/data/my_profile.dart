@@ -1,7 +1,6 @@
-import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pineapple_tok/data/profile.dart';
 
 class MyProfile extends Profile {
@@ -19,23 +18,24 @@ class MyProfile extends Profile {
 
 class MyProfileHandler {
   final _authentication = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   Future<MyProfile> updateMyProfile() async {
     final curUser = _authentication.currentUser;
 
-    String jsonData = await rootBundle.loadString('dummy_data/user_profile.json');
-    dynamic parsingData = jsonDecode(jsonData);
+    final collectionRef = _firestore.collection('user').doc('Pcb6GpXLiBuBQtXXG1Vc').collection('profile');
+    final querySnapshot = await collectionRef.get();
 
     String thumbnail = '';
     String background = '';
     String name = '';
     String comment = '';
-    for (var x in parsingData['user_profile']) {
-      if (x['uid'] == curUser!.uid) {
-        thumbnail = x['thumbnail'];
-        background = x['background'];
-        name = x['name'];
-        comment = x['comment'];
+    for (var doc in querySnapshot.docs) {
+      if (doc['uid'] == curUser!.uid) {
+        thumbnail = doc['thumbnail'];
+        background = doc['background'];
+        name = doc['name'];
+        comment = doc['comment'];
 
         break;
       }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pineapple_tok/data/profile.dart';
 
 class Friend extends Profile {
@@ -19,6 +20,7 @@ class Friend extends Profile {
 
 class FriendHandler {
   final _authentication = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
   Future<List<String>> getFriendsList() async {
     final curUser = _authentication.currentUser;
@@ -39,18 +41,18 @@ class FriendHandler {
   }
 
   Future<List<Friend>> updateFriendList() async {
-    String jsonData = await rootBundle.loadString('dummy_data/user_profile.json');
-    dynamic parsingData = jsonDecode(jsonData);
+    final collectionRef = _firestore.collection('user').doc('Pcb6GpXLiBuBQtXXG1Vc').collection('profile');
+    final querySnapshot = await collectionRef.get();
 
     List<String> friendIdList = await getFriendsList();
 
     List<Friend> friendList = [];
-    for (var x in parsingData['user_profile']) {
-      if (friendIdList.contains(x['uid'])) {
-        String thumbnail = x['thumbnail'];
-        String background = x['background'];
-        String name = x['name'];
-        String comment = x['comment'];
+    for (var doc in querySnapshot.docs) {
+      if (friendIdList.contains(doc['uid'])) {
+        String thumbnail = doc['thumbnail'];
+        String background = doc['background'];
+        String name = doc['name'];
+        String comment = doc['comment'];
         friendList.add(Friend.getFriendProfile(thumbnail, background, name, comment));
       }
     }
