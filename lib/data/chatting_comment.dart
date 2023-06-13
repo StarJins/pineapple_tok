@@ -1,43 +1,40 @@
-import 'package:flutter/services.dart';
-import 'dart:convert';
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ChattingComment {
-  String uid, name, thumbnail, comment, time;
-  ChattingComment(this.uid, this.name, this.thumbnail, this.comment, this.time);
+class ChattingMessage {
+  String uid, name, thumbnail, message, time;
+  ChattingMessage(this.uid, this.name, this.thumbnail, this.message, this.time);
 
-  factory ChattingComment.getChattingComment(String uid, String name,
-    String thumbnail, String comment, String time) {
+  factory ChattingMessage.getChattingComment(String uid, String name,
+    String thumbnail, String message, String time) {
     if (thumbnail == '') {
       thumbnail = 'assets/basic_profile_picture.png';
     }
-    return ChattingComment(uid, name, thumbnail, comment, time);
+    return ChattingMessage(uid, name, thumbnail, message, time);
   }
 }
 
-class ChattingCommentHandler {
+class ChattingMessageHandler {
+  final _firestore = FirebaseFirestore.instance;
   final currentChattingId;
 
-  ChattingCommentHandler(this.currentChattingId);
+  ChattingMessageHandler(this.currentChattingId);
 
-  Future<List<ChattingComment>> updateChattingComments() async {
-    String jsonData = await rootBundle.loadString('dummy_data/chatting_comment.json');
-    dynamic parsingData = jsonDecode(jsonData);
+  Future<List<ChattingMessage>> updateChattingMessages() async {
+    final docRef = _firestore.collection('chatting').doc('messages')
+        .collection('data').doc(this.currentChattingId);
+    final doc = await docRef.get();
 
-    List<ChattingComment> chattingComments = [];
-    for (var x in parsingData['chatting_comment']) {
-      if (x['id'] == this.currentChattingId) {
-        for (var y in x['chat_list']) {
-          String uid = y['uid'];
-          String name = y['name'];
-          String thumbnail = y['thumbnail'];
-          String comment = y['comment'];
-          String time = y['time'];
-          chattingComments.add(ChattingComment.getChattingComment(
-            uid, name, thumbnail, comment, time
-          ));
-        }
-      }
+    List<ChattingMessage> chattingComments = [];
+    for (var _message in doc['message_list']) {
+      String uid = _message['uid'];
+      String name = _message['name'];
+      String thumbnail = _message['thumbnail'];
+      String message = _message['message'];
+      String time = _message['time'];
+      chattingComments.add(ChattingMessage.getChattingComment(
+        uid, name, thumbnail, message, time
+      ));
     }
 
     return chattingComments;

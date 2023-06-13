@@ -15,7 +15,7 @@ class ChattingRoomPage extends StatefulWidget {
 class _ChattingRoomPageState extends State<ChattingRoomPage> {
   final _authentication = FirebaseAuth.instance;
 
-  List<ChattingComment>? chattingComments = null;
+  List<ChattingMessage>? chattingMessages = null;
 
   @override
   void initState() {
@@ -25,8 +25,8 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
   }
 
   void _loadData() async {
-    ChattingCommentHandler handler = ChattingCommentHandler(widget.chattingInfo.id);
-    this.chattingComments = await handler.updateChattingComments();
+    ChattingMessageHandler handler = ChattingMessageHandler(widget.chattingInfo.cid);
+    this.chattingMessages = await handler.updateChattingMessages();
     setState(() {});
   }
 
@@ -76,10 +76,10 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
   }
 
   List<Widget> _buildChattingRoom(BuildContext context) {
-    if (this.chattingComments != null) {
+    if (this.chattingMessages != null) {
       List<Widget> tileList = List.generate(
-          this.chattingComments!.length, (index) =>
-          makeChattingCommentWidget(this.chattingComments![index])
+          this.chattingMessages!.length, (index) =>
+          makeChattingCommentWidget(this.chattingMessages![index])
       );
 
       return tileList;
@@ -88,21 +88,21 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     }
   }
 
-  Widget makeChattingCommentWidget(ChattingComment comment) {
+  Widget makeChattingCommentWidget(ChattingMessage message) {
     final curUser = _authentication.currentUser;
 
     List<Widget> RowChildren = [];
     MainAxisAlignment alignment = MainAxisAlignment.start;
 
-    if (curUser!.uid == comment.uid) {
-      RowChildren.add(Text(comment.time));
-      RowChildren.add(_messageBody(comment));
+    if (curUser!.uid == message.uid) {
+      RowChildren.add(Text(message.time));
+      RowChildren.add(_messageBody(message));
       alignment = MainAxisAlignment.end;
     }
     else {
-      RowChildren.add(_messageThumbnail(comment));
-      RowChildren.add(_messageBody(comment));
-      RowChildren.add(Text(comment.time));
+      RowChildren.add(_messageThumbnail(message));
+      RowChildren.add(_messageBody(message));
+      RowChildren.add(Text(message.time));
       alignment = MainAxisAlignment.start;
     }
 
@@ -118,25 +118,25 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     );
   }
 
-  Widget _messageThumbnail(ChattingComment comment) {
+  Widget _messageThumbnail(ChattingMessage message) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 5.0),
       child: Image.asset(
-        comment.thumbnail,
+        message.thumbnail,
         width: 50.0,
       ),
     );
   }
 
-  Widget _messageBody(ChattingComment comment) {
+  Widget _messageBody(ChattingMessage message) {
     final curUser = _authentication.currentUser;
 
     bool isSender = false;
-    String name = comment.name;
+    String name = message.name;
     CrossAxisAlignment alignment = CrossAxisAlignment.start;
     EdgeInsets padding = EdgeInsets.only(left: 15.0);
 
-    if (curUser!.uid == comment.uid) {
+    if (curUser!.uid == message.uid) {
       isSender = true;
       name = "";
       alignment = CrossAxisAlignment.end;
@@ -151,7 +151,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
           child: Text(name),
         ),
         ChatBubble(
-          comment: comment.comment,
+          comment: message.message,
           isSender: isSender,
         ),
       ],

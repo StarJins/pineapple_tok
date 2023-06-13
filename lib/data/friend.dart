@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:async';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pineapple_tok/data/profile.dart';
@@ -25,23 +23,21 @@ class FriendHandler {
   Future<List<String>> getFriendsList() async {
     final curUser = _authentication.currentUser;
 
-    String jsonData = await rootBundle.loadString('dummy_data/user_friends.json');
-    dynamic parsingData = jsonDecode(jsonData);
+    final docRef = _firestore.collection('user').doc('friends')
+        .collection('data').doc(curUser!.uid);
+    final doc = await docRef.get();
 
     List<String> friendList = [];
-    for (var x in parsingData['user_friends']) {
-      if (x['uid'] == curUser!.uid) {
-        for (var y in x['friends']) {
-          friendList.add(y);
-        }
-      }
+    for (var x in doc['friends']) {
+      friendList.add(x);
     }
 
     return friendList;
   }
 
   Future<List<Friend>?> updateFriendList() async {
-    final collectionRef = _firestore.collection('user').doc('Pcb6GpXLiBuBQtXXG1Vc').collection('profile');
+    final collectionRef = _firestore.collection('user').doc('profiles')
+      .collection('data');
     final querySnapshot = await collectionRef.get();
 
     List<String> friendIdList = await getFriendsList();

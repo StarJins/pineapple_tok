@@ -23,8 +23,8 @@ class MyProfileHandler {
   Future<MyProfile?> updateMyProfile() async {
     final curUser = _authentication.currentUser;
 
-    final docRef = _firestore.collection('user').doc('Pcb6GpXLiBuBQtXXG1Vc')
-      .collection('profile').doc(curUser!.uid);
+    final docRef = _firestore.collection('user').doc('profiles')
+      .collection('data').doc(curUser!.uid);
     final doc = await docRef.get();
 
     if (doc.exists) {
