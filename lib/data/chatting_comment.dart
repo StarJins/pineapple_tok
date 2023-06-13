@@ -20,7 +20,7 @@ class ChattingMessageHandler {
 
   ChattingMessageHandler(this.currentChattingId);
 
-  Future<List<ChattingMessage>> updateChattingMessages() async {
+  Future<List<ChattingMessage>?> updateChattingMessages() async {
     final docRef = _firestore.collection('chatting').doc('messages')
         .collection('data').doc(this.currentChattingId);
     final doc = await docRef.get();
@@ -37,6 +37,11 @@ class ChattingMessageHandler {
       ));
     }
 
-    return chattingComments;
+    if (chattingComments.length == 0) {
+      return null;
+    }
+    else {
+      return chattingComments;
+    }
   }
 }

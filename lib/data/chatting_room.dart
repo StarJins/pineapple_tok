@@ -79,7 +79,7 @@ class ChattingRoomHandler {
     return await getUserThumbnailAndName(otherUid);
   }
 
-  Future<List<ChattingRoom>> updateChattingRoomList() async {
+  Future<List<ChattingRoom>?> updateChattingRoomList() async {
     final collectionRef = _firestore.collection('chatting').doc('rooms')
         .collection('data');
     final querySnapshot = await collectionRef.get();
@@ -111,6 +111,12 @@ class ChattingRoomHandler {
           members));
       }
     }
-    return chattingRoomList;
+
+    if (chattingRoomList.length == 0) {
+      return null;
+    }
+    else {
+      return chattingRoomList;
+    }
   }
 }

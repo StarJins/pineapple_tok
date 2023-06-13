@@ -15,6 +15,7 @@ class ChattingRoomPage extends StatefulWidget {
 class _ChattingRoomPageState extends State<ChattingRoomPage> {
   final _authentication = FirebaseAuth.instance;
 
+  bool isDataLoading = true;
   List<ChattingMessage>? chattingMessages = null;
 
   @override
@@ -27,26 +28,35 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
   void _loadData() async {
     ChattingMessageHandler handler = ChattingMessageHandler(widget.chattingInfo.cid);
     this.chattingMessages = await handler.updateChattingMessages();
-    setState(() {});
+    setState(() {
+      isDataLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0.0,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.keyboard_arrow_left),
+    if (this.isDataLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    else {
+      return Scaffold(
+        // extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          elevation: 0.0,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.keyboard_arrow_left),
+          ),
+          title: _getAppbarTitle(),
         ),
-        title: _getAppbarTitle(),
-      ),
-      body: _buildProfileBody(),
-      backgroundColor: Colors.lightBlueAccent,
-    );
+        body: _buildProfileBody(),
+        backgroundColor: Colors.lightBlueAccent,
+      );
+    }
   }
 
   Widget _getAppbarTitle() {
@@ -84,7 +94,17 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
 
       return tileList;
     } else {
-      return [ CircularProgressIndicator()];
+      return [
+        Center(
+          child: Text(
+            'data load error, please re-load this page',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+          ),
+        )
+      ];
     }
   }
 

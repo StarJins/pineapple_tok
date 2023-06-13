@@ -11,6 +11,7 @@ class ChattingPage extends StatefulWidget {
 }
 
 class _ChattingPageState extends State<ChattingPage> {
+  bool isDataLoading = true;
   List<ChattingRoom>? chattingList = null;
 
   // initState는 statefulWidget이 생성될 때 제일 처음에 호출된다.
@@ -30,28 +31,37 @@ class _ChattingPageState extends State<ChattingPage> {
 
   void _loadData() async {
     this.chattingList = await this._loadChattingRoomList();
-    setState(() {});
+    setState(() {
+      isDataLoading = false;
+    });
   }
 
-  Future<List<ChattingRoom>> _loadChattingRoomList() async {
+  Future<List<ChattingRoom>?> _loadChattingRoomList() async {
     ChattingRoomHandler c = ChattingRoomHandler();
     return c.updateChattingRoomList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: _buildChattingRoomList(context),
+    if (this.isDataLoading) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    else {
+      return Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: _buildChattingRoomList(context),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
   }
 
   List<Widget> _buildChattingRoomList(BuildContext context) {
@@ -84,7 +94,17 @@ class _ChattingPageState extends State<ChattingPage> {
         )
       );
     } else {
-      return [ CircularProgressIndicator() ];
+      return [
+        Center(
+          child: Text(
+            'data load error, please re-load this page',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+          ),
+        )
+      ];
     }
   }
 }
