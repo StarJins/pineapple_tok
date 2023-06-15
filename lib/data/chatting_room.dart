@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:tuple/tuple.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pineapple_tok/data/profile.dart';
 
 enum ChattingType {
   individual, // 0
@@ -52,21 +53,6 @@ class ChattingRoomHandler {
     return chattingList;
   }
 
-  Future<Tuple2<String, String>> getUserThumbnailAndName(String uid) async {
-    final docRef = _firestore.collection('user').doc('profiles')
-        .collection('data').doc(uid);
-    final doc = await docRef.get();
-
-    String thumbnail = doc['thumbnail'];
-    if (thumbnail == '') {
-      thumbnail = 'assets/basic_profile_picture.png';
-    }
-    String name = doc['name'];
-
-    Tuple2<String, String> userInfo = Tuple2<String, String>(thumbnail, name);
-    return userInfo;
-  }
-
   Future<Tuple2<String, String>> setThumbnailAndNameValue(List<String> members) async {
     final curUser = _authentication.currentUser;
 
@@ -76,7 +62,13 @@ class ChattingRoomHandler {
         otherUid = member;
       }
     }
-    return await getUserThumbnailAndName(otherUid);
+
+    ProfileHandler profileHandler = ProfileHandler();
+    Profile? userProfile = await profileHandler.getProfile(otherUid);
+    if (userProfile == null) {
+      userProfile = Profile.getProfile('', '', 'error', '');
+    }
+    return Tuple2<String, String>(userProfile.thumbnail, userProfile.name);
   }
 
   Future<List<ChattingRoom>?> updateChattingRoomList() async {
