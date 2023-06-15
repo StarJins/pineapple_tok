@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/data/chatting_comment.dart';
 import 'package:pineapple_tok/chatting_page/chat_bubble.dart';
+import 'package:pineapple_tok/chatting_page/message_send_bar.dart';
 
 class ChattingRoomPage extends StatefulWidget {
   final ChattingRoom chattingInfo;
@@ -69,19 +70,25 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     return titleText;
   }
 
-  Column _buildProfileBody() {
-    return Column(
-      children: [
-        Expanded(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ListView(
-              shrinkWrap: true,
-              children: _buildChattingRoom(context),
+  Widget _buildProfileBody() {
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Column(
+        children: [
+          Expanded(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: ListView(
+                shrinkWrap: true,
+                children: _buildChattingRoom(context),
+              ),
             ),
           ),
-        ),
-      ],
+          MessageSendBar(chattingRoomId: widget.chattingInfo.cid),
+        ],
+      ),
     );
   }
 
