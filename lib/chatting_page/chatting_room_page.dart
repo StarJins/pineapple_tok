@@ -42,20 +42,25 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
       );
     }
     else {
-      return Scaffold(
-        // extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          elevation: 0.0,
-          leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.keyboard_arrow_left),
+      return GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: Scaffold(
+          // extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            elevation: 0.0,
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.keyboard_arrow_left),
+            ),
+            title: _getAppbarTitle(),
           ),
-          title: _getAppbarTitle(),
+          body: _buildProfileBody(),
+          backgroundColor: Colors.lightBlueAccent,
         ),
-        body: _buildProfileBody(),
-        backgroundColor: Colors.lightBlueAccent,
       );
     }
   }
@@ -71,24 +76,19 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
   }
 
   Widget _buildProfileBody() {
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: Column(
-        children: [
-          Expanded(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: ListView(
-                shrinkWrap: true,
-                children: _buildChattingRoom(context),
-              ),
+    return Column(
+      children: [
+        Expanded(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ListView(
+              shrinkWrap: true,
+              children: _buildChattingRoom(context),
             ),
           ),
-          MessageSendBar(chattingRoomId: widget.chattingInfo.cid),
-        ],
-      ),
+        ),
+        MessageSendBar(chattingRoomId: widget.chattingInfo.cid),
+      ],
     );
   }
 
