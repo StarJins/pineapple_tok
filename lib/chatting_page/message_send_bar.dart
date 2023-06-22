@@ -17,9 +17,9 @@ class _MessageSendBarState extends State<MessageSendBar> {
   final _textFieldController = TextEditingController();
   var _sendedMessage = '';
 
-  void _sendMessage() {
+  Future<void> _sendMessage() async {
     FocusScope.of(context).unfocus();
-    _firestore
+    await _firestore
     .collection('chatting').doc('messages')
     .collection('data').doc(widget.chattingRoomId)
     .collection('chat').add({
