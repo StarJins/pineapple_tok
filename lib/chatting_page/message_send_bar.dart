@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MessageSendBar extends StatefulWidget {
   final chattingRoomId;
-  const MessageSendBar({Key? key, required this.chattingRoomId}) : super(key: key);
+  final ScrollController scrollController;
+  const MessageSendBar({Key? key, required this.chattingRoomId, required this.scrollController}) : super(key: key);
 
   @override
   State<MessageSendBar> createState() => _MessageSendBarState();
@@ -29,6 +30,10 @@ class _MessageSendBarState extends State<MessageSendBar> {
     });
     _textFieldController.clear();
     _sendedMessage = '';
+
+    widget.scrollController.jumpTo(
+        widget.scrollController.position.minScrollExtent,
+    );
   }
 
   @override

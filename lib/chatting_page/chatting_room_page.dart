@@ -20,6 +20,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
 
   // StreamBuilder와 FutureBuilder 사용 시 화면이 계속 새로고침 되는 것을 막기 위한 변수
   ListView _messageData = ListView();
+  ScrollController _scrollController = new ScrollController();
 
   @override
   void initState() {
@@ -70,7 +71,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
             stream: _firestore
                     .collection('chatting').doc('messages').collection('data')
                     .doc(widget.chattingInfo.cid).collection('chat')
-                    .orderBy('time', descending: true).snapshots(), // 가장 마지막 message로 가기 위해 내림차순으로 정렬
+                    .orderBy('time', descending: true).snapshots(), // 첫 로딩 시 가장 마지막 message로 가기 위해 내림차순으로 정렬
             builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return _messageData;
@@ -86,7 +87,8 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     _messageData = ListView.builder(
-                      reverse: true,  // 가장 마지막 message로 가기 위해 사용
+                      controller: _scrollController,
+                      reverse: true,  // 첫 로딩 시 가장 마지막 message로 가기 위해 사용
                       itemCount: chatDocs.length,
                       itemBuilder: (context, index) {
                         return makeChattingCommentWidget(snapshot.data![index]);
@@ -100,7 +102,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
             },
           ),
         ),
-        MessageSendBar(chattingRoomId: widget.chattingInfo.cid),
+        MessageSendBar(chattingRoomId: widget.chattingInfo.cid, scrollController: _scrollController),
       ],
     );
   }
