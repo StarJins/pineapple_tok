@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:pineapple_tok/data/profile.dart';
 
 class ChattingMessage {
@@ -16,20 +17,18 @@ class ChattingMessage {
 }
 
 class ChattingMessageHandler {
-  final _firestore = FirebaseFirestore.instance;
   final currentChattingId;
   ProfileHandler profileHandler = ProfileHandler();
 
   ChattingMessageHandler(this.currentChattingId);
 
-  Future<List<ChattingMessage>?> updateChattingMessages() async {
-    final docRef = _firestore.collection('chatting').doc('messages')
-        .collection('data').doc(this.currentChattingId);
-    final doc = await docRef.get();
-
+  Future<List<ChattingMessage>?> getChattingMessages(
+      List<QueryDocumentSnapshot<Map<String, dynamic>>> messageList
+  ) async {
     Map<String, Profile?> userProfiles = {};
     List<ChattingMessage> chattingComments = [];
-    for (var _message in doc['message_list']) {
+
+    for (var _message in messageList) {
       String uid = _message['uid'];
       if (userProfiles.containsKey(uid) == false) {
         userProfiles[uid] = await profileHandler.getProfile(uid);
@@ -37,9 +36,10 @@ class ChattingMessageHandler {
       String name = userProfiles[uid] == null ? 'error' : userProfiles[uid]!.name;
       String thumbnail = userProfiles[uid] == null ? '' : userProfiles[uid]!.thumbnail;
       String message = _message['message'];
-      String time = _message['time'];
+      DateTime dateTime = _message['time'].toDate();
+      String time = DateFormat('HH:mm').format(dateTime);
       chattingComments.add(ChattingMessage.getChattingComment(
-        uid, name, thumbnail, message, time
+          uid, name, thumbnail, message, time
       ));
     }
 

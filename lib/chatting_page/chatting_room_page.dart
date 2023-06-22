@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/data/chatting_comment.dart';
 import 'package:pineapple_tok/chatting_page/chat_bubble.dart';
@@ -15,54 +16,39 @@ class ChattingRoomPage extends StatefulWidget {
 
 class _ChattingRoomPageState extends State<ChattingRoomPage> {
   final _authentication = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
 
-  bool isDataLoading = true;
-  List<ChattingMessage>? chattingMessages = null;
+  // StreamBuilder와 FutureBuilder 사용 시 화면이 계속 새로고침 되는 것을 막기 위한 변수
+  ListView _messageData = ListView();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    this._loadData();
-  }
-
-  void _loadData() async {
-    ChattingMessageHandler handler = ChattingMessageHandler(widget.chattingInfo.cid);
-    this.chattingMessages = await handler.updateChattingMessages();
-    setState(() {
-      isDataLoading = false;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if (this.isDataLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-    else {
-      return GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus();
-        },
-        child: Scaffold(
-          // extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            elevation: 0.0,
-            leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(Icons.keyboard_arrow_left),
-            ),
-            title: _getAppbarTitle(),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        // extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          elevation: 0.0,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.keyboard_arrow_left),
           ),
-          body: _buildProfileBody(),
-          backgroundColor: Colors.lightBlueAccent,
+          title: _getAppbarTitle(),
         ),
-      );
-    }
+        body: _buildProfileBody(),
+        backgroundColor: Colors.lightBlueAccent,
+      ),
+    );
   }
 
   Widget _getAppbarTitle() {
@@ -79,40 +65,44 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     return Column(
       children: [
         Expanded(
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: ListView(
-              shrinkWrap: true,
-              children: _buildChattingRoom(context),
-            ),
+          // StreamBuilder를 통해 firestore에 chat 정보가 입력되면 실시간으로 가져온다
+          child: StreamBuilder(
+            stream: _firestore
+                    .collection('chatting').doc('messages').collection('data')
+                    .doc(widget.chattingInfo.cid).collection('chat')
+                    .orderBy('time', descending: true).snapshots(), // 가장 마지막 message로 가기 위해 내림차순으로 정렬
+            builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return _messageData;
+              }
+
+              ChattingMessageHandler handler = ChattingMessageHandler(widget.chattingInfo.cid);
+              final chatDocs = snapshot.data!.docs;
+              // chat bubble을 만들기 위해서는 async 함수를 호출해야 한다.
+              // 이때 StreamBuilder의 builder는 async 함수화가 되지 않는다.
+              // 따라서 FutureBuilder를 이용해 async 함수를 호출
+              return FutureBuilder(
+                future: handler.getChattingMessages(chatDocs),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    _messageData = ListView.builder(
+                      reverse: true,  // 가장 마지막 message로 가기 위해 사용
+                      itemCount: chatDocs.length,
+                      itemBuilder: (context, index) {
+                        return makeChattingCommentWidget(snapshot.data![index]);
+                      },
+                    );
+                  }
+
+                  return _messageData;
+                },
+              );
+            },
           ),
         ),
         MessageSendBar(chattingRoomId: widget.chattingInfo.cid),
       ],
     );
-  }
-
-  List<Widget> _buildChattingRoom(BuildContext context) {
-    if (this.chattingMessages != null) {
-      List<Widget> tileList = List.generate(
-          this.chattingMessages!.length, (index) =>
-          makeChattingCommentWidget(this.chattingMessages![index])
-      );
-
-      return tileList;
-    } else {
-      return [
-        Center(
-          child: Text(
-            'data load error, please re-load this page',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20.0,
-            ),
-          ),
-        )
-      ];
-    }
   }
 
   Widget makeChattingCommentWidget(ChattingMessage message) {
