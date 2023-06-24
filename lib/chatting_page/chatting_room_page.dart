@@ -157,7 +157,7 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
             borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
-          DateFormat('y년 M월 d일').format(datetime),
+          DateFormat('y년 M월 d일 EEEE').format(datetime),
           style: TextStyle(
             fontSize: 15.0,
             fontWeight: FontWeight.w500,
