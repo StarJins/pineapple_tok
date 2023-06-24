@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:tuple/tuple.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:pineapple_tok/data/profile.dart';
 import 'package:pineapple_tok/data/chatting_comment.dart';
 
@@ -17,7 +18,7 @@ class ChattingRoom {
   String chattingRoomName;
   int numOfPeople;
   String lastChat;
-  String lastChatTime;
+  DateTime lastChatTime;
   List<String> members;
 
   ChattingRoom(this.cid, this.chattingRoomType, this.thumbnail, this.chattingRoomName,
@@ -25,13 +26,33 @@ class ChattingRoom {
 
   factory ChattingRoom.getChattingRoom(String cid, ChattingType chattingRoomType,
     String thumbnail, String chattingRoomName, int numOfPeople, String lastChat,
-    String lastChatTime, List<String> members) {
+    DateTime lastChatTime, List<String> members) {
     if (thumbnail == '') {
       thumbnail = 'assets/basic_profile_picture.png';
     }
 
     return ChattingRoom(cid, chattingRoomType, thumbnail, chattingRoomName,
       numOfPeople, lastChat, lastChatTime, members);
+  }
+
+  String getStrTimeToPrint() {
+    int currentDay = DateTime.now().day;
+    int currentYear = DateTime.now().year;
+
+    int targetDay = this.lastChatTime.day;
+    int targetMonth = this.lastChatTime.month;
+    int targetYear = this.lastChatTime.year;
+
+    if (currentDay == targetDay) {
+      return DateFormat('HH:mm').format(this.lastChatTime);
+    }
+    else if (currentDay - targetDay == 1) {
+      return '어제';
+    }
+    else if (currentYear == targetYear) {
+      return targetMonth.toString() + '월 ' + targetDay.toString() + '일';
+    }
+    return targetYear.toString() + '. ' + targetMonth.toString() + '. ' + targetDay.toString() + '.';
   }
 }
 
@@ -90,7 +111,7 @@ class ChattingRoomHandler {
         ChattingMessageHandler messageHandler = ChattingMessageHandler(doc.id);
         var lastChatInfo = await messageHandler.getLastChatInfo();
         String lastChat = lastChatInfo.item1;
-        String lastChatTime = lastChatInfo.item2;
+        DateTime lastChatTime = lastChatInfo.item2;
 
         List<String> members = [];
         for (var member in doc['members']) {

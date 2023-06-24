@@ -66,33 +66,31 @@ class _ChattingPageState extends State<ChattingPage> {
 
   List<Widget> _buildChattingRoomList(BuildContext context) {
     if (this.chattingList != null) {
-      return List.generate(
-        this.chattingList!.length,
-        (index) => ListTile(
-          leading: Image.asset(this.chattingList![index].thumbnail),
-          title: Row(
-            children: [
-              Text(this.chattingList![index].chattingRoomName),
-              if (this.chattingList![index].chattingRoomType == ChattingType.group) ... [
-                SizedBox(width: 5.0,),
-                Text(this.chattingList![index].numOfPeople.toString()),
-              ]
-            ],
-          ),
-          subtitle: Text(this.chattingList![index].lastChat),
-          trailing: Text(this.chattingList![index].lastChatTime),
-          onTap: () {
-            Navigator.of(context).push(
-              PageTransition(
-                type: PageTransitionType.bottomToTop,
-                child: ChattingRoomPage(
-                  chattingInfo: this.chattingList![index],
-                ),
+      this.chattingList!.sort((a, b) => b.lastChatTime.compareTo(a.lastChatTime));
+      return List.generate(this.chattingList!.length, (index) => ListTile(
+        leading: Image.asset(this.chattingList![index].thumbnail),
+        title: Row(
+          children: [
+            Text(this.chattingList![index].chattingRoomName),
+            if (this.chattingList![index].chattingRoomType == ChattingType.group) ... [
+              SizedBox(width: 5.0,),
+              Text(this.chattingList![index].numOfPeople.toString()),
+            ]
+          ],
+        ),
+        subtitle: Text(this.chattingList![index].lastChat),
+        trailing: Text(this.chattingList![index].getStrTimeToPrint()),
+        onTap: () {
+          Navigator.of(context).push(
+            PageTransition(
+              type: PageTransitionType.bottomToTop,
+              child: ChattingRoomPage(
+                chattingInfo: this.chattingList![index],
               ),
-            );
-          },
-        )
-      );
+            ),
+          );
+        },
+      ));
     } else {
       return [
         Center(

@@ -78,6 +78,7 @@ class _FriendPageState extends State<FriendPage> {
   }
 
   List<Widget> _buildFriendProfiles(BuildContext context) {
+    this.friendList!.sort((a, b) => a.name.compareTo(b.name));
     List<Widget> friendList = List.generate(
       this.friendList!.length,
       (index) => makeProfileTile(this.friendList![index])
