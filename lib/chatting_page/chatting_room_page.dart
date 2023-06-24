@@ -68,72 +68,68 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
       children: [
         Expanded(
           // StreamBuilder를 통해 firestore에 chat 정보가 입력되면 실시간으로 가져온다
-          child: StreamBuilder(
-            stream: _firestore
-                    .collection('chatting').doc('messages').collection('data')
-                    .doc(widget.chattingInfo.cid).collection('chat')
-                    .orderBy('time', descending: true).snapshots(), // 첫 로딩 시 가장 마지막 message로 가기 위해 내림차순으로 정렬
-            builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return _messageData;
-              }
-
-              ChattingMessageHandler handler = ChattingMessageHandler(widget.chattingInfo.cid);
-              final chatDocs = snapshot.data!.docs;
-              // chat bubble을 만들기 위해서는 async 함수를 호출해야 한다.
-              // 이때 StreamBuilder의 builder는 async 함수화가 되지 않는다.
-              // 따라서 FutureBuilder를 이용해 async 함수를 호출
-              return FutureBuilder(
-                future: handler.getChattingMessages(chatDocs),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    _messageData = ListView(
-                      controller: _scrollController,
-                      reverse: true,  // 첫 로딩 시 가장 마지막 message로 가기 위해 사용
-                      children: _buildChattingMessage(context, snapshot.data!),
-                    );
-                  }
-
-                  return _messageData;
-                },
-              );
-            },
-          ),
+          child: _readDataAndMakeMessageList(),
         ),
         MessageSendBar(chattingRoomId: widget.chattingInfo.cid, scrollController: _scrollController),
       ],
     );
   }
 
-  List<Widget> _buildChattingMessage(BuildContext context, List<ChattingMessage>? dataList) {
-    if (dataList != null) {
-      List<Widget> messageList = [];
-
-      messageList.add(makeChattingCommentWidget(dataList[0]!));
-      DateTime beforeDate = dataList[0]!.dateTime;
-      for (var data in dataList!.sublist(1)) {
-        if (_isDifferenceDate(beforeDate, data.dateTime)) {
-          messageList.add(_makeDateSeparator(beforeDate));
+  Widget _readDataAndMakeMessageList() {
+    return StreamBuilder(
+      stream: _firestore
+          .collection('chatting').doc('messages').collection('data')
+          .doc(widget.chattingInfo.cid).collection('chat')
+          .orderBy('time', descending: true).snapshots(), // 첫 로딩 시 가장 마지막 message로 가기 위해 내림차순으로 정렬
+      builder: (context, AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _messageData;
         }
-        messageList.add(makeChattingCommentWidget(data));
-        beforeDate = data.dateTime;
-      }
-      messageList.add(_makeDateSeparator(beforeDate));
 
-      return messageList;
-    } else {
-      return [
-        Center(
-          child: Text(
-            'data load error, please re-load this page',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20.0,
-            ),
-          ),
-        )
-      ];
+        final chatDocs = snapshot.data!.docs;
+        // chat bubble을 만들기 위해서는 async 함수를 호출해야 한다.
+        // 이때 StreamBuilder의 builder는 async 함수화가 되지 않는다.
+        // 따라서 _makeMessageList 함수 내에서 FutureBuilder를 이용해 async 함수를 호출
+        return _makeMessageList(chatDocs);
+      },
+    );
+  }
+
+  Widget _makeMessageList(chatDocs) {
+    ChattingMessageHandler handler = ChattingMessageHandler(widget.chattingInfo.cid);
+    return FutureBuilder(
+      future: handler.getChattingMessages(chatDocs),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.data != null) {
+            _messageData = ListView(
+              controller: _scrollController,
+              reverse: true, // 첫 로딩 시 가장 마지막 message로 가기 위해 사용
+              children: _buildChattingMessage(context, snapshot.data!),
+            );
+          }
+        }
+
+        return _messageData;
+      },
+    );
+  }
+
+  List<Widget> _buildChattingMessage(BuildContext context, List<ChattingMessage> dataList) {
+    List<Widget> messageList = [];
+
+    messageList.add(makeChattingCommentWidget(dataList[0]));
+    DateTime beforeDate = dataList[0].dateTime;
+    for (var data in dataList.sublist(1)) {
+      if (_isDifferenceDate(beforeDate, data.dateTime)) {
+        messageList.add(_makeDateSeparator(beforeDate));
+      }
+      messageList.add(makeChattingCommentWidget(data));
+      beforeDate = data.dateTime;
     }
+    messageList.add(_makeDateSeparator(beforeDate));
+
+    return messageList;
   }
 
   bool _isDifferenceDate(DateTime d1, DateTime d2) {
