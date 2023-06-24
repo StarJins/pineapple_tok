@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/data/chatting_comment.dart';
 import 'package:pineapple_tok/chatting_page/chat_bubble.dart';
@@ -86,13 +87,10 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
                 future: handler.getChattingMessages(chatDocs),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
-                    _messageData = ListView.builder(
+                    _messageData = ListView(
                       controller: _scrollController,
                       reverse: true,  // 첫 로딩 시 가장 마지막 message로 가기 위해 사용
-                      itemCount: chatDocs.length,
-                      itemBuilder: (context, index) {
-                        return makeChattingCommentWidget(snapshot.data![index]);
-                      },
+                      children: _buildChattingMessage(context, snapshot.data!),
                     );
                   }
 
@@ -107,6 +105,69 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     );
   }
 
+  List<Widget> _buildChattingMessage(BuildContext context, List<ChattingMessage>? dataList) {
+    if (dataList != null) {
+      List<Widget> messageList = [];
+
+      messageList.add(makeChattingCommentWidget(dataList[0]!));
+      DateTime beforeDate = dataList[0]!.dateTime;
+      for (var data in dataList!.sublist(1)) {
+        if (_isDifferenceDate(beforeDate, data.dateTime)) {
+          messageList.add(_makeDateSeparator(beforeDate));
+        }
+        messageList.add(makeChattingCommentWidget(data));
+        beforeDate = data.dateTime;
+      }
+      messageList.add(_makeDateSeparator(beforeDate));
+
+      return messageList;
+    } else {
+      return [
+        Center(
+          child: Text(
+            'data load error, please re-load this page',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20.0,
+            ),
+          ),
+        )
+      ];
+    }
+  }
+
+  bool _isDifferenceDate(DateTime d1, DateTime d2) {
+    String s1 = DateFormat('yMd').format(d1);
+    String s2 = DateFormat('yMd').format(d2);
+
+    if (s1 != s2) {
+      return true;
+    }
+
+    return false;
+  }
+
+  Widget _makeDateSeparator(DateTime datetime) {
+    return Center(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 5.0),
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 2.0),
+        decoration: BoxDecoration(
+          color: Colors.black12,
+            borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          DateFormat('y년 M월 d일').format(datetime),
+          style: TextStyle(
+            fontSize: 15.0,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget makeChattingCommentWidget(ChattingMessage message) {
     final curUser = _authentication.currentUser;
 
@@ -114,14 +175,14 @@ class _ChattingRoomPageState extends State<ChattingRoomPage> {
     MainAxisAlignment alignment = MainAxisAlignment.start;
 
     if (curUser!.uid == message.uid) {
-      RowChildren.add(Text(message.time));
+      RowChildren.add(Text(message.getTime()));
       RowChildren.add(_messageBody(message));
       alignment = MainAxisAlignment.end;
     }
     else {
       RowChildren.add(_messageThumbnail(message));
       RowChildren.add(_messageBody(message));
-      RowChildren.add(Text(message.time));
+      RowChildren.add(Text(message.getTime()));
       alignment = MainAxisAlignment.start;
     }
 

@@ -4,15 +4,20 @@ import 'package:intl/intl.dart';
 import 'package:pineapple_tok/data/profile.dart';
 
 class ChattingMessage {
-  String uid, name, thumbnail, message, time;
-  ChattingMessage(this.uid, this.name, this.thumbnail, this.message, this.time);
+  String uid, name, thumbnail, message;
+  DateTime dateTime;
+  ChattingMessage(this.uid, this.name, this.thumbnail, this.message, this.dateTime);
 
   factory ChattingMessage.getChattingComment(String uid, String name,
-    String thumbnail, String message, String time) {
+    String thumbnail, String message, DateTime dateTime) {
     if (thumbnail == '') {
       thumbnail = 'assets/basic_profile_picture.png';
     }
-    return ChattingMessage(uid, name, thumbnail, message, time);
+    return ChattingMessage(uid, name, thumbnail, message, dateTime);
+  }
+
+  String getTime() {
+    return DateFormat('HH:mm').format(this.dateTime);
   }
 }
 
@@ -37,9 +42,8 @@ class ChattingMessageHandler {
       String thumbnail = userProfiles[uid] == null ? '' : userProfiles[uid]!.thumbnail;
       String message = _message['message'];
       DateTime dateTime = _message['time'].toDate();
-      String time = DateFormat('HH:mm').format(dateTime);
       chattingComments.add(ChattingMessage.getChattingComment(
-          uid, name, thumbnail, message, time
+          uid, name, thumbnail, message, dateTime
       ));
     }
 
