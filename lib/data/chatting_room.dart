@@ -3,6 +3,7 @@ import 'package:tuple/tuple.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pineapple_tok/data/profile.dart';
+import 'package:pineapple_tok/data/chatting_comment.dart';
 
 enum ChattingType {
   individual, // 0
@@ -85,8 +86,12 @@ class ChattingRoomHandler {
         String thumbnail = doc['thumbnail'];
         String chattingRoomName = doc['name'];
         int numOfPeople = doc['count'];
-        String lastChat = doc['lastChat'];
-        String lastChatTime = doc['lastChatTime'];
+
+        ChattingMessageHandler messageHandler = ChattingMessageHandler(doc.id);
+        var lastChatInfo = await messageHandler.getLastChatInfo();
+        String lastChat = lastChatInfo.item1;
+        String lastChatTime = lastChatInfo.item2;
+
         List<String> members = [];
         for (var member in doc['members']) {
           members.add(member);

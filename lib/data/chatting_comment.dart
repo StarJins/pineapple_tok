@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'package:tuple/tuple.dart';
 import 'package:pineapple_tok/data/profile.dart';
 
 class ChattingMessage {
@@ -22,6 +23,7 @@ class ChattingMessage {
 }
 
 class ChattingMessageHandler {
+  final _firestore = FirebaseFirestore.instance;
   final currentChattingId;
   ProfileHandler profileHandler = ProfileHandler();
 
@@ -53,5 +55,37 @@ class ChattingMessageHandler {
     else {
       return chattingComments;
     }
+  }
+
+  Future<Tuple2<String, String>> getLastChatInfo() async {
+    final collectionRef = _firestore
+        .collection('chatting').doc('messages').collection('data')
+        .doc(this.currentChattingId).collection('chat')
+        .orderBy('time', descending: true);
+    final querySnapshot = await collectionRef.get();
+    final lastDoc = querySnapshot.docs[0];
+
+    String time = _getStrTimeToPrint(lastDoc['time'].toDate());
+    return Tuple2<String, String>(lastDoc['message'], time);
+  }
+
+  String _getStrTimeToPrint(DateTime dateTime) {
+    int currentDay = DateTime.now().day;
+    int currentYear = DateTime.now().year;
+
+    int targetDay = dateTime.day;
+    int targetMonth = dateTime.month;
+    int targetYear = dateTime.year;
+
+    if (currentDay == targetDay) {
+      return DateFormat('HH:mm').format(dateTime);
+    }
+    else if (currentDay - targetDay == 1) {
+      return '어제';
+    }
+    else if (currentYear == targetYear) {
+      return targetMonth.toString() + '월 ' + targetDay.toString() + '일';
+    }
+    return targetYear.toString() + '. ' + targetMonth.toString() + '. ' + targetDay.toString() + '.';
   }
 }
