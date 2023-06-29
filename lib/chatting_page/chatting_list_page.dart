@@ -88,7 +88,9 @@ class _ChattingPageState extends State<ChattingPage> {
                 chattingInfo: this.chattingList![index],
               ),
             ),
-          );
+          ).then((value) {
+            this._loadData();
+          });
         },
       ));
     } else {
