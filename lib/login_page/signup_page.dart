@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pineapple_tok/data/account.dart';
 import 'package:pineapple_tok/layout/main_page.dart';
-import 'package:pineapple_tok/login_page/signup_page.dart';
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignUpPage extends StatelessWidget {
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -12,12 +11,7 @@ class LoginPage extends StatelessWidget {
     return ScaffoldMessenger(
       child: Scaffold(
         appBar: AppBar(
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.close),
-            ),
-          ],
+          title: Text('회원가입'),
           elevation: 0.0,
         ),
         body: _BuildBody(),
@@ -44,6 +38,7 @@ class _BuildBody extends StatelessWidget {
         child: Column(
           children: [
             // 전체 폰 화면에서 가운데가 될 수 있게 flex를 조절
+            // TODO: stack 활용해서 위치 조정해보기
             Expanded(
               child: SizedBox(),
               flex: 1,
@@ -70,14 +65,10 @@ class _MainScreen extends StatelessWidget {
         padding: const EdgeInsets.all(30.0),
         child: Column(
           children: [
-            Image.asset(
-              'assets/login_pineapple.png',
-              height: 200.0,
-            ),
             SizedBox(
               height: 40.0,
             ),
-            LoginForm(),
+            SignUpForm(),
           ],
         ),
       ),
@@ -85,16 +76,17 @@ class _MainScreen extends StatelessWidget {
   }
 }
 
-class LoginForm extends StatefulWidget {
-  const LoginForm({
+class SignUpForm extends StatefulWidget {
+  const SignUpForm({
     super.key,
   });
 
   @override
-  State<LoginForm> createState() => _LoginFormState();
+  State<SignUpForm> createState() => _SignUpFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _SignUpFormState extends State<SignUpForm> {
+  TextEditingController nameTextController = TextEditingController();
   TextEditingController idTextController = TextEditingController();
   TextEditingController pwTextController = TextEditingController();
   bool? autoLoginFlag = false;
@@ -103,6 +95,10 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        _MyTextField('Enter your name', TextInputType.text, nameTextController, false),
+        SizedBox(
+          height: 10.0,
+        ),
         _MyTextField('Enter your ID', TextInputType.emailAddress, idTextController, false),
         SizedBox(
           height: 10.0,
@@ -116,59 +112,9 @@ class _LoginFormState extends State<LoginForm> {
           height: 60.0,
           // login page에서만 snack bar가 보일 수 있도록 Builder 추가
           child: Builder(
-            builder: (context) {
-              return _loginButton(context);
-            }
-          ),
-        ),
-        SizedBox(
-          height: 10.0,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _checkAutoLogin(),
-            _signUpButton(),
-          ],
-        ),
-      ],
-    );
-  }
-
-  TextButton _signUpButton() {
-    return TextButton(
-      onPressed: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignUpPage()));
-      },
-      child: Text(
-        '회원가입',
-        style: TextStyle(
-          color: Colors.black,
-          fontSize: 15.0,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  Row _checkAutoLogin() {
-    return Row(
-      children: [
-        Checkbox(
-          value: autoLoginFlag,
-          onChanged: (bool? newValue) {
-            setState(() {
-              autoLoginFlag = newValue;
-            });
-          },
-          checkColor: Colors.black54,
-          activeColor: Colors.white,
-        ),
-        Text(
-          '자동로그인',
-          style: TextStyle(
-            fontSize: 15.0,
-            fontWeight: FontWeight.bold,
+              builder: (context) {
+                return _SignUpButton(context);
+              }
           ),
         ),
       ],
@@ -189,24 +135,28 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  ElevatedButton _loginButton(BuildContext context) {
+  ElevatedButton _SignUpButton(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.green[400],
       ),
-      onPressed: () async {
-        bool isValid = await _checkIdPw(context, idTextController.text, pwTextController.text);
-        setState(() {
-          if (isValid) {
-            if (autoLoginFlag! == false) {
-              idTextController.text = '';
-              pwTextController.text = '';
-            }
-          }
-        });
-      },
+      onPressed: null,
+      // onPressed: () async {
+      //   // TODO: 비밀번호 6자 이상
+      //   // TODO: firebase 규칙 조금 더 찾아보고 추가하기
+      //   // TODO: account에 회원가입 관련 함수 추가
+      //   bool isValid = await _checkIdPw(context, idTextController.text, pwTextController.text);
+      //   setState(() {
+      //     if (isValid) {
+      //       if (autoLoginFlag! == false) {
+      //         idTextController.text = '';
+      //         pwTextController.text = '';
+      //       }
+      //     }
+      //   });
+      // },
       child: Text(
-        '로그인',
+        '회원가입',
         style: TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
@@ -216,6 +166,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
+  // TODO: 함수 회원가입 시 조건 체크하는 걸로 이름 변경
   Future<bool> _checkIdPw(BuildContext context, String id, String pw) async {
     final duration = 2;
 
