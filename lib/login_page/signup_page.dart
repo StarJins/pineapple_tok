@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pineapple_tok/data/account.dart';
-import 'package:pineapple_tok/layout/main_page.dart';
+import 'package:tuple/tuple.dart';
 
 class SignUpPage extends StatelessWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -89,7 +89,6 @@ class _SignUpFormState extends State<SignUpForm> {
   TextEditingController nameTextController = TextEditingController();
   TextEditingController idTextController = TextEditingController();
   TextEditingController pwTextController = TextEditingController();
-  bool? autoLoginFlag = false;
 
   @override
   Widget build(BuildContext context) {
@@ -140,21 +139,16 @@ class _SignUpFormState extends State<SignUpForm> {
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.green[400],
       ),
-      onPressed: null,
-      // onPressed: () async {
-      //   // TODO: 비밀번호 6자 이상
-      //   // TODO: firebase 규칙 조금 더 찾아보고 추가하기
-      //   // TODO: account에 회원가입 관련 함수 추가
-      //   bool isValid = await _checkIdPw(context, idTextController.text, pwTextController.text);
-      //   setState(() {
-      //     if (isValid) {
-      //       if (autoLoginFlag! == false) {
-      //         idTextController.text = '';
-      //         pwTextController.text = '';
-      //       }
-      //     }
-      //   });
-      // },
+      onPressed: () async {
+        bool isValid = await _createAccount(
+          nameTextController.text,
+          idTextController.text,
+          pwTextController.text,
+        );
+        if (isValid) {
+          Navigator.of(context).pop(isValid);
+        }
+      },
       child: Text(
         '회원가입',
         style: TextStyle(
@@ -166,26 +160,21 @@ class _SignUpFormState extends State<SignUpForm> {
     );
   }
 
-  // TODO: 함수 회원가입 시 조건 체크하는 걸로 이름 변경
-  Future<bool> _checkIdPw(BuildContext context, String id, String pw) async {
-    final duration = 2;
-
+  Future<bool> _createAccount(String name, String id, String pw) async {
+    final duration = 3;
     Account account = Account();
-    bool isValid = await account.checkIdPw(id, pw);
 
-    if (!isValid) {
+    Tuple2<bool, String> isSuccess = await account.createAccount(name, id, pw);
+    if (!isSuccess.item1) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('ID 또는 PW가 올바르지 않습니다.'),
+          content: Text(isSuccess.item2),
           duration: Duration(seconds: duration),
           backgroundColor: Colors.lightBlue,
         ),
       );
-      return false;
     }
-    else {
-      Navigator.of(context).push(MaterialPageRoute(builder: (context) => MainPage()));
-      return true;
-    }
+
+    return isSuccess.item1;
   }
 }

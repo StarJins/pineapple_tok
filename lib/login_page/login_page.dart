@@ -136,9 +136,19 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   TextButton _signUpButton() {
+    final duration = 2;
     return TextButton(
-      onPressed: () {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignUpPage()));
+      onPressed: () async {
+        dynamic result = await Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignUpPage()));
+        if (result) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('회원가입 성공'),
+              duration: Duration(seconds: duration),
+              backgroundColor: Colors.lightBlue,
+            ),
+          );
+        }
       },
       child: Text(
         '회원가입',

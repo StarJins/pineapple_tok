@@ -26,6 +26,9 @@ class FriendHandler {
     final docRef = _firestore.collection('user').doc('friends')
         .collection('data').doc(curUser!.uid);
     final doc = await docRef.get();
+    if (!doc.exists) {
+      return [];
+    }
 
     List<String> friendList = [];
     for (var x in doc['friends']) {

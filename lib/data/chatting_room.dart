@@ -66,6 +66,9 @@ class ChattingRoomHandler {
     final docRef = _firestore.collection('user').doc('chattings')
         .collection('data').doc(curUser!.uid);
     final doc = await docRef.get();
+    if (!doc.exists) {
+      return [];
+    }
 
     List<String> chattingList = [];
     for (var room in doc['chatting_rooms']) {
