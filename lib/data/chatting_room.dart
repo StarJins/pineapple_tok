@@ -102,6 +102,9 @@ class ChattingRoomHandler {
     final querySnapshot = await collectionRef.get();
 
     List<String> chattingRoomIdList = await getChattingList();
+    if (chattingRoomIdList.length == 0) {
+      return [];
+    }
 
     List<ChattingRoom> chattingRoomList = [];
     for (var doc in querySnapshot.docs) {

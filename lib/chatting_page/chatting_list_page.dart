@@ -4,6 +4,8 @@ import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/chatting_page/chatting_room_page.dart';
 
 class ChattingPage extends StatefulWidget {
+  static List<Widget> chattingList = [];
+
   const ChattingPage({Key? key}) : super(key: key);
 
   @override
@@ -11,7 +13,6 @@ class ChattingPage extends StatefulWidget {
 }
 
 class _ChattingPageState extends State<ChattingPage> {
-  bool isDataLoading = true;
   List<ChattingRoom>? chattingList = null;
 
   // initState는 statefulWidget이 생성될 때 제일 처음에 호출된다.
@@ -31,9 +32,7 @@ class _ChattingPageState extends State<ChattingPage> {
 
   void _loadData() async {
     this.chattingList = await this._loadChattingRoomList();
-    setState(() {
-      isDataLoading = false;
-    });
+    setState(() {});
   }
 
   Future<List<ChattingRoom>?> _loadChattingRoomList() async {
@@ -43,31 +42,24 @@ class _ChattingPageState extends State<ChattingPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (this.isDataLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-    else {
-      return Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: _buildChattingRoomList(context),
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: _buildChattingRoomList(context),
             ),
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
   }
 
   List<Widget> _buildChattingRoomList(BuildContext context) {
     if (this.chattingList != null) {
       this.chattingList!.sort((a, b) => b.lastChatTime.compareTo(a.lastChatTime));
-      return List.generate(this.chattingList!.length, (index) => ListTile(
+      ChattingPage.chattingList = List.generate(this.chattingList!.length, (index) => ListTile(
         leading: Image.asset(this.chattingList![index].thumbnail),
         title: Row(
           children: [
@@ -93,18 +85,18 @@ class _ChattingPageState extends State<ChattingPage> {
           });
         },
       ));
-    } else {
-      return [
-        Center(
-          child: Text(
-            'data load error, please re-load this page',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20.0,
-            ),
+
+      ChattingPage.chattingList.insert(0, Container(
+        margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+        child: Text(
+          '채팅: ${this.chattingList!.length}',
+          style: TextStyle(
+            fontSize: 14.0,
           ),
-        )
-      ];
+        ),
+      ));
     }
+
+     return ChattingPage.chattingList;
   }
 }

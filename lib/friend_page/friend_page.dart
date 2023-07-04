@@ -6,6 +6,8 @@ import 'package:pineapple_tok/data/profile.dart';
 import 'package:pineapple_tok/friend_page/profile_page.dart';
 
 class FriendPage extends StatefulWidget {
+  static List<Widget> profileList = [];
+
   const FriendPage({Key? key}) : super(key: key);
 
   @override
@@ -13,7 +15,6 @@ class FriendPage extends StatefulWidget {
 }
 
 class _FriendPageState extends State<FriendPage> {
-  bool isDataLoading = true;
   MyProfile? myProfile = null;
   List<Friend>? friendList = null;
 
@@ -35,9 +36,7 @@ class _FriendPageState extends State<FriendPage> {
   void _loadData() async {
     this.myProfile = await this._loadMyProfile();
     this.friendList = await this._loadFriendList();
-    setState(() {
-      isDataLoading = false;
-    });
+    setState(() {});
   }
 
   Future<MyProfile?> _loadMyProfile() async {
@@ -52,25 +51,18 @@ class _FriendPageState extends State<FriendPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (this.isDataLoading) {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
-    }
-    else {
-      return Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView(
-                children: _buildProfileList(context),
-              ),
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              children: _buildProfileList(context),
             ),
-          ],
-        ),
-      );
-    }
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildMyProfile(BuildContext context) {
@@ -84,32 +76,50 @@ class _FriendPageState extends State<FriendPage> {
       (index) => makeProfileTile(this.friendList![index])
     );
 
+    _numOfFriends(friendList, this.friendList!.length);
     return friendList;
   }
 
+  void _numOfFriends(List<Widget> friendList, int numOfFriends) {
+    friendList.insert(0, Container(
+      margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
+      child: Text(
+        '친구: ${numOfFriends}',
+        style: TextStyle(
+          fontSize: 14.0,
+        ),
+      ),
+    ));
+  }
+
   List<Widget> _buildProfileList(BuildContext context) {
-    if (this.myProfile == null || this.friendList == null) {
-      return [
-        Center(
-          child: Text(
-            'data load error, please re-load this page',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20.0,
-            ),
-          ),
-        )
-      ];
+    if (this.myProfile == null && this.friendList == null) {
+      return FriendPage.profileList;
     }
 
-    List<Widget> tileList = [];
-    tileList = _buildFriendProfiles(context);
-    tileList.insert(0, Divider(
-      height: 20,
-      thickness: 2.0,
-    ));
-    tileList.insert(0, _buildMyProfile(context));
-    return tileList;
+    FriendPage.profileList = [];
+
+    if (this.friendList != null) {
+      FriendPage.profileList = _buildFriendProfiles(context);
+    }
+    else {
+      _numOfFriends(FriendPage.profileList, 0);
+      FriendPage.profileList.add(
+        ListTile(
+          title: Text('친구가 없습니다.'),
+        ),
+      );
+    }
+
+    if (this.myProfile != null) {
+      FriendPage.profileList.insert(0, Divider(
+        height: 20,
+        thickness: 2.0,
+      ));
+      FriendPage.profileList.insert(0, _buildMyProfile(context));
+    }
+
+    return FriendPage.profileList;
   }
 
   ListTile makeProfileTile(Profile data) {
