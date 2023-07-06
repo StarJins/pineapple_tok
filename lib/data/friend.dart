@@ -4,15 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pineapple_tok/data/profile.dart';
 
 class Friend extends Profile {
-  Friend(String thumbnail, String background, String name, String comment)
+  String uid;
+  Friend(this.uid, String thumbnail, String background, String name, String comment)
       : super(thumbnail, background, name, comment);
 
-  factory Friend.getFriendProfile(String thumbnail, String background, String name, String comment) {
+  factory Friend.getFriendProfile(String uid, String thumbnail, String background, String name, String comment) {
     if (thumbnail == '') {
       thumbnail = 'assets/basic_profile_picture.png';
     }
 
-    return Friend(thumbnail, background, name, comment);
+    return Friend(uid, thumbnail, background, name, comment);
   }
 }
 
@@ -52,7 +53,9 @@ class FriendHandler {
         String background = doc['background'];
         String name = doc['name'];
         String comment = doc['comment'];
-        friendList.add(Friend.getFriendProfile(thumbnail, background, name, comment));
+
+        print(doc.id);
+        friendList.add(Friend.getFriendProfile(doc.id, thumbnail, background, name, comment));
       }
     }
 

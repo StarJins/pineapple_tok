@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:pineapple_tok/chatting_page/chatting_list_page.dart';
 import 'package:pineapple_tok/credit_page/credit_page.dart';
 import 'package:pineapple_tok/friend_page/friend_page.dart';
+import 'package:pineapple_tok/friend_page/new_friend_page.dart';
 
 class MainPage extends StatefulWidget {
   MainPage({Key? key}) : super(key: key);
@@ -16,7 +18,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _getAppbar(),
       body: _getBodyPage(),
       bottomNavigationBar: SizedBox(
         height: 60.0,
@@ -25,23 +27,44 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      title: _getAppbarTitle(),
-      automaticallyImplyLeading: false,
-      elevation: 0.0,
-    );
-  }
-
-  Widget _getAppbarTitle() {
+  AppBar _getAppbar() {
     if (_selectedPageIdx == 0) {
-      return Text('friend page');
+      return AppBar(
+        title: Text('friend page'),
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageTransition(
+                    type: PageTransitionType.bottomToTop,
+                    child: NewFriendPage(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.person_add_alt_1),
+              splashRadius: 20.0,
+            ),
+          ),
+        ],
+      );
     }
     else if (_selectedPageIdx == 1) {
-      return Text('chatting page');
+      return AppBar(
+        title: Text('chatting page'),
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+      );
     }
     else {
-      return Text('credit page');
+      return AppBar(
+        title: Text('credit page'),
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+      );
     }
   }
 
