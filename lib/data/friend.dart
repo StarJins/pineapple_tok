@@ -75,6 +75,7 @@ class FriendHandler {
 
     List<Friend> newFriendList = [];
     for (var doc in querySnapshot.docs) {
+      // TODO: 현재 친구인 사람도 제외시켜 주어야함
       if (doc.id != curUser!.uid) {
         String thumbnail = doc['thumbnail'];
         String background = doc['background'];
