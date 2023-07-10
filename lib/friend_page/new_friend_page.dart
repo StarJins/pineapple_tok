@@ -54,7 +54,7 @@ class _NewFriendListViewState extends State<NewFriendListView> {
 
   Future<List<Friend>?> _loadFriendList() async {
     FriendHandler f = FriendHandler();
-    return f.updateFriendList();
+    return f.updateNewFriendList();
   }
 
   @override

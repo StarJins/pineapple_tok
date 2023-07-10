@@ -66,4 +66,31 @@ class FriendHandler {
       return friendList;
     }
   }
+
+  Future<List<Friend>?> updateNewFriendList() async {
+    final collectionRef = _firestore.collection('user').doc('profiles')
+        .collection('data');
+    final querySnapshot = await collectionRef.get();
+    final curUser = _authentication.currentUser;
+
+    List<Friend> newFriendList = [];
+    for (var doc in querySnapshot.docs) {
+      if (doc.id != curUser!.uid) {
+        String thumbnail = doc['thumbnail'];
+        String background = doc['background'];
+        String name = doc['name'];
+        String comment = doc['comment'];
+
+        print(doc.id);
+        newFriendList.add(Friend.getFriendProfile(doc.id, thumbnail, background, name, comment));
+      }
+    }
+
+    if (newFriendList.length == 0) {
+      return null;
+    }
+    else {
+      return newFriendList;
+    }
+  }
 }
