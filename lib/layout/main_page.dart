@@ -37,13 +37,23 @@ class _MainPageState extends State<MainPage> {
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: IconButton(
-              onPressed: () {
-                Navigator.of(context).push(
+              onPressed: () async {
+                dynamic result = await Navigator.of(context).push(
                   PageTransition(
                     type: PageTransitionType.bottomToTop,
                     child: NewFriendPage(),
                   ),
                 );
+
+                if (result) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('친구추가 성공'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.lightBlue,
+                    ),
+                  );
+                }
               },
               icon: Icon(Icons.person_add_alt_1),
               splashRadius: 20.0,

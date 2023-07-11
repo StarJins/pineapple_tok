@@ -54,7 +54,6 @@ class FriendHandler {
         String name = doc['name'];
         String comment = doc['comment'];
 
-        print(doc.id);
         friendList.add(Friend.getFriendProfile(doc.id, thumbnail, background, name, comment));
       }
     }
@@ -68,21 +67,21 @@ class FriendHandler {
   }
 
   Future<List<Friend>?> updateNewFriendList() async {
+    final curUser = _authentication.currentUser;
     final collectionRef = _firestore.collection('user').doc('profiles')
         .collection('data');
     final querySnapshot = await collectionRef.get();
-    final curUser = _authentication.currentUser;
+
+    List<String> friendIdList = await getFriendsList();
 
     List<Friend> newFriendList = [];
     for (var doc in querySnapshot.docs) {
-      // TODO: 현재 친구인 사람도 제외시켜 주어야함
-      if (doc.id != curUser!.uid) {
+      if (doc.id != curUser!.uid && !friendIdList.contains(doc.id)) {
         String thumbnail = doc['thumbnail'];
         String background = doc['background'];
         String name = doc['name'];
         String comment = doc['comment'];
 
-        print(doc.id);
         newFriendList.add(Friend.getFriendProfile(doc.id, thumbnail, background, name, comment));
       }
     }

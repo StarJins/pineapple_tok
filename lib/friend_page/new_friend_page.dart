@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pineapple_tok/data/friend.dart';
 
 class NewFriendPage extends StatelessWidget {
@@ -10,6 +12,12 @@ class NewFriendPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('친구 추가'),
         elevation: 0.0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
+        ),
       ),
       body: Column(
         children: [
@@ -32,6 +40,9 @@ class NewFriendListView extends StatefulWidget {
 }
 
 class _NewFriendListViewState extends State<NewFriendListView> {
+  final _authentication = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
+
   List<Friend>? _friendList = null;
   Map<String, bool> _checkboxValueList = {};
 
@@ -59,8 +70,59 @@ class _NewFriendListViewState extends State<NewFriendListView> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: _buildProfileList(context),
+    return Stack(
+      children: [
+        ListView(
+          children: _buildProfileList(context),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: ElevatedButton(
+              onPressed: () async {
+                var checkedCount = this._checkboxValueList.values.where((c) => c == true).length;
+                if (checkedCount == 0) {
+                  _showSnackBar(context);
+                  return;
+                }
+
+                await _setNewFriendsList();
+                Navigator.of(context).pop(true);
+                // TODO: 화면 갱신하는거 추가하려면 main_page.dart 구조를 바꿔야할 것 같다. 조진듯?
+              },
+              child: Text('친구 추가'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _setNewFriendsList() async {
+    FriendHandler f = FriendHandler();
+    List<String> newFriendsList = await f.getFriendsList();
+
+    for (var newFriend in this._checkboxValueList.entries) {
+      if (newFriend.value) {
+        newFriendsList.add(newFriend.key);
+      }
+    }
+
+    await _firestore.collection('user').doc('friends')
+    .collection('data').doc(_authentication.currentUser!.uid)
+    .set({
+      'friends' : newFriendsList
+    });
+  }
+
+  void _showSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('추가할 친구를 선택해 주세요.'),
+        duration: Duration(seconds: 2),
+        backgroundColor: Colors.lightBlue,
+      ),
     );
   }
 
