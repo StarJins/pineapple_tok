@@ -4,6 +4,7 @@ import 'package:pineapple_tok/data/friend.dart';
 import 'package:pineapple_tok/data/my_profile.dart';
 import 'package:pineapple_tok/data/profile.dart';
 import 'package:pineapple_tok/friend_page/profile_page.dart';
+import 'package:pineapple_tok/friend_page/new_friend_page.dart';
 
 class FriendPage extends StatefulWidget {
   static List<Widget> profileList = [];
@@ -33,7 +34,7 @@ class _FriendPageState extends State<FriendPage> {
     this._loadData();
   }
 
-  void _loadData() async {
+  Future<void> _loadData() async {
     this.myProfile = await this._loadMyProfile();
     this.friendList = await this._loadFriendList();
     setState(() {});
@@ -51,16 +52,52 @@ class _FriendPageState extends State<FriendPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: _buildProfileList(context),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('friend page'),
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: IconButton(
+              onPressed: () async {
+                dynamic result = await Navigator.of(context).push(
+                  PageTransition(
+                    type: PageTransitionType.bottomToTop,
+                    child: NewFriendPage(),
+                  ),
+                );
+
+                if (result) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('친구추가 성공'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.lightBlue,
+                    ),
+                  );
+                }
+
+                await this._loadData();
+              },
+              icon: Icon(Icons.person_add_alt_1),
+              splashRadius: 20.0,
             ),
           ),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: _buildProfileList(context),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

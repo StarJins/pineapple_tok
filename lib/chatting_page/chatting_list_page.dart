@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pineapple_tok/data/chatting_room.dart';
 import 'package:pineapple_tok/chatting_page/chatting_room_page.dart';
+import 'package:pineapple_tok/chatting_page/new_chatting_page.dart';
 
 class ChattingPage extends StatefulWidget {
   static List<Widget> chattingList = [];
@@ -42,16 +43,50 @@ class _ChattingPageState extends State<ChattingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: _buildChattingRoomList(context),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('chatting page'),
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: IconButton(
+              onPressed: () async {
+                dynamic result = await Navigator.of(context).push(
+                  PageTransition(
+                    type: PageTransitionType.bottomToTop,
+                    child: NewChattingPage(),
+                  ),
+                );
+
+                if (result) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('채팅방 생성 성공'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.lightBlue,
+                    ),
+                  );
+                }
+              },
+              icon: Icon(Icons.add_box),
+              splashRadius: 20.0,
             ),
           ),
         ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView(
+                children: _buildChattingRoomList(context),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

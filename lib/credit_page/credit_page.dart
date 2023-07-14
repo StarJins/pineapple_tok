@@ -8,20 +8,27 @@ class CreditPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text('credit page'),
-        ElevatedButton(
-          onPressed: () {
-            FriendPage.profileList = [];
-            ChattingPage.chattingList = [];
-            final _authentication = FirebaseAuth.instance;
-            _authentication.signOut();
-            Navigator.of(context).pop();
-          },
-          child: Text('logout'),
-        ),
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('credit page'),
+        automaticallyImplyLeading: false,
+        elevation: 0.0,
+      ),
+      body: Column(
+        children: [
+          Text('credit page'),
+          ElevatedButton(
+            onPressed: () {
+              FriendPage.profileList = [];
+              ChattingPage.chattingList = [];
+              final _authentication = FirebaseAuth.instance;
+              _authentication.signOut();
+              Navigator.of(context).pop();
+            },
+            child: Text('logout'),
+          ),
+        ],
+      ),
     );
   }
 }
