@@ -89,7 +89,6 @@ class _NewFriendListViewState extends State<NewFriendListView> {
 
                 await _setNewFriendsList();
                 Navigator.of(context).pop(true);
-                // TODO: 화면 갱신하는거 추가하려면 main_page.dart 구조를 바꿔야할 것 같다. 조진듯?
               },
               child: Text('친구 추가'),
             ),
