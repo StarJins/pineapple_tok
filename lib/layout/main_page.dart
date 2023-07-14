@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:pineapple_tok/chatting_page/chatting_list_page.dart';
+import 'package:pineapple_tok/chatting_page/new_chatting_page.dart';
 import 'package:pineapple_tok/credit_page/credit_page.dart';
 import 'package:pineapple_tok/friend_page/friend_page.dart';
 import 'package:pineapple_tok/friend_page/new_friend_page.dart';
@@ -67,6 +68,33 @@ class _MainPageState extends State<MainPage> {
         title: Text('chatting page'),
         automaticallyImplyLeading: false,
         elevation: 0.0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: IconButton(
+              onPressed: () async {
+                dynamic result = await Navigator.of(context).push(
+                  PageTransition(
+                    type: PageTransitionType.bottomToTop,
+                    child: NewChattingPage(),
+                  ),
+                );
+
+                if (result) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('채팅방 생성 성공'),
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.lightBlue,
+                    ),
+                  );
+                }
+              },
+              icon: Icon(Icons.add_box),
+              splashRadius: 20.0,
+            ),
+          ),
+        ],
       );
     }
     else {
