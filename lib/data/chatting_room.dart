@@ -60,6 +60,14 @@ class ChattingRoomHandler {
   final _authentication = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
 
+  Future<String> getNewChattingRoomId() async {
+    final collectionRef = _firestore.collection('chatting').doc('rooms').collection('data');
+    final querySnapshot = await collectionRef.get();
+    String newId = querySnapshot.docs.length.toString();
+
+    return newId;
+  }
+
   Future<List<String>> getChattingList() async {
     final curUser = _authentication.currentUser;
 

@@ -64,7 +64,14 @@ class ChattingMessageHandler {
         .orderBy('time', descending: true);
     final querySnapshot = await collectionRef.get();
 
-    final lastDoc = querySnapshot.docs[0];
-    return Tuple2<String, DateTime>(lastDoc['message'], lastDoc['time'].toDate());
+    String lastMessage = '';
+    DateTime lastTime = DateTime(0);
+    if (querySnapshot.docs.length != 0) {
+      final lastDoc = querySnapshot.docs[0];
+      lastMessage = lastDoc['message'];
+      lastTime = lastDoc['time'].toDate();
+    }
+
+    return Tuple2<String, DateTime>(lastMessage, lastTime);
   }
 }

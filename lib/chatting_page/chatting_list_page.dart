@@ -31,7 +31,7 @@ class _ChattingPageState extends State<ChattingPage> {
     this._loadData();
   }
 
-  void _loadData() async {
+  Future<void> _loadData() async {
     this.chattingList = await this._loadChattingRoomList();
     setState(() {});
   }
@@ -69,6 +69,8 @@ class _ChattingPageState extends State<ChattingPage> {
                     ),
                   );
                 }
+
+                await this._loadData();
               },
               icon: Icon(Icons.add_box),
               splashRadius: 20.0,

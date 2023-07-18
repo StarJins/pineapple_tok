@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pineapple_tok/data/friend.dart';
+import 'package:pineapple_tok/data/chatting_room.dart';
 
 class NewChattingPage extends StatelessWidget {
   const NewChattingPage({Key? key}) : super(key: key);
@@ -89,7 +90,6 @@ class _NewChattingListViewState extends State<NewChattingListView> {
 
                 await _createNewChattingRoom();
                 Navigator.of(context).pop(true);
-                // TODO: 화면 갱신하는거 추가하려면 main_page.dart 구조를 바꿔야할 것 같다.
               },
               child: Text('채팅방 생성'),
             ),
@@ -100,8 +100,44 @@ class _NewChattingListViewState extends State<NewChattingListView> {
   }
 
   Future<void> _createNewChattingRoom() async {
-    // 채팅 생성 시, 원래 있던 채팅 목록 가져오기
-    // 가져온 후에, 새로 생성될 채팅 리스트를 그 뒤에 추가
+    ChattingRoomHandler roomHandler = ChattingRoomHandler();
+
+    String newChattingRoomId = await roomHandler.getNewChattingRoomId();
+
+    List<String> chattingList = await roomHandler.getChattingList();
+    chattingList.add(newChattingRoomId);
+
+    await _firestore.collection('user').doc('chattings')
+    .collection('data').doc(_authentication.currentUser!.uid)
+    .set({
+      'chatting_rooms' : chattingList
+    });
+
+    List<String> members = [];
+    for (var selectedFriend in this._checkboxValueList.entries) {
+      if (selectedFriend.value) {
+        members.add(selectedFriend.key);
+      }
+    }
+
+    ChattingType type = (members.length >= 3) ? ChattingType.group : ChattingType.individual;
+    String chattingRoomName = (members.length >= 3) ? '단체방${newChattingRoomId}' : '개인방';
+
+    ChattingRoom newChattingRoom = ChattingRoom.getChattingRoom(
+        newChattingRoomId, type, '', chattingRoomName, members.length, '', DateTime(0), members
+    );
+
+    await _firestore.collection('chatting').doc('rooms')
+    .collection('data').doc(newChattingRoomId)
+    .set({
+      'count' : newChattingRoom.numOfPeople,
+      'members' : newChattingRoom.members,
+      'name' : newChattingRoom.chattingRoomName,
+      'thumbnail' : newChattingRoom.thumbnail,
+      'type' : newChattingRoom.chattingRoomType.index
+    });
+
+    // TODO: 이름 설정 할 수 있게 추가해야 함
   }
 
   void _showSnackBar(BuildContext context) {
