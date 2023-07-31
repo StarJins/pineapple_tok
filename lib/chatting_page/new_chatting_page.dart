@@ -104,21 +104,14 @@ class _NewChattingListViewState extends State<NewChattingListView> {
 
     String newChattingRoomId = await roomHandler.getNewChattingRoomId();
 
-    List<String> chattingList = await roomHandler.getChattingList();
-    chattingList.add(newChattingRoomId);
-
-    await _firestore.collection('user').doc('chattings')
-    .collection('data').doc(_authentication.currentUser!.uid)
-    .set({
-      'chatting_rooms' : chattingList
-    });
-
+    // 전체 채팅 리스트에 추가
     List<String> members = [];
     for (var selectedFriend in this._checkboxValueList.entries) {
       if (selectedFriend.value) {
         members.add(selectedFriend.key);
       }
     }
+    members.add(_authentication.currentUser!.uid);
 
     ChattingType type = (members.length >= 3) ? ChattingType.group : ChattingType.individual;
     String chattingRoomName = (members.length >= 3) ? '단체방${newChattingRoomId}' : '개인방';
@@ -136,6 +129,18 @@ class _NewChattingListViewState extends State<NewChattingListView> {
       'thumbnail' : newChattingRoom.thumbnail,
       'type' : newChattingRoom.chattingRoomType.index
     });
+
+    // 각 유저의 채팅 리스트에 추가
+    for (var uid in members) {
+      List<String> chattingList = await roomHandler.getChattingList(uid);
+      chattingList.add(newChattingRoomId);
+
+      await _firestore.collection('user').doc('chattings')
+      .collection('data').doc(uid)
+      .set({
+        'chatting_rooms' : chattingList
+      });
+    }
 
     // TODO: 이름 설정 할 수 있게 추가해야 함
   }

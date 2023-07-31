@@ -68,11 +68,9 @@ class ChattingRoomHandler {
     return newId;
   }
 
-  Future<List<String>> getChattingList() async {
-    final curUser = _authentication.currentUser;
-
+  Future<List<String>> getChattingList(String uid) async {
     final docRef = _firestore.collection('user').doc('chattings')
-        .collection('data').doc(curUser!.uid);
+        .collection('data').doc(uid);
     final doc = await docRef.get();
     if (!doc.exists) {
       return [];
@@ -109,7 +107,7 @@ class ChattingRoomHandler {
         .collection('data');
     final querySnapshot = await collectionRef.get();
 
-    List<String> chattingRoomIdList = await getChattingList();
+    List<String> chattingRoomIdList = await getChattingList(_authentication.currentUser!.uid);
     if (chattingRoomIdList.length == 0) {
       return [];
     }
