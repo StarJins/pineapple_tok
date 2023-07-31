@@ -52,7 +52,13 @@ class ChattingRoom {
     else if (currentYear == targetYear) {
       return targetMonth.toString() + '월 ' + targetDay.toString() + '일';
     }
-    return targetYear.toString() + '. ' + targetMonth.toString() + '. ' + targetDay.toString() + '.';
+    else if (this.lastChatTime == DateTime(0)) {
+      return '';
+    }
+    else {
+      return targetYear.toString() + '. ' + targetMonth.toString() + '. ' +
+          targetDay.toString() + '.';
+    }
   }
 }
 
