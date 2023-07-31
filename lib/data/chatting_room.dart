@@ -130,7 +130,7 @@ class ChattingRoomHandler {
           members.add(member);
         }
 
-        if (chattingRoomType == ChattingType.individual) {
+        if (chattingRoomType == ChattingType.individual && chattingRoomName == '개인방') {
           Tuple2<String, String> userInfo = await setThumbnailAndNameValue(members);
           thumbnail = userInfo.item1;
           chattingRoomName = userInfo.item2;

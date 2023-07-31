@@ -46,6 +46,7 @@ class _NewChattingListViewState extends State<NewChattingListView> {
 
   List<Friend>? _friendList = null;
   Map<String, bool> _checkboxValueList = {};
+  TextEditingController nameController = TextEditingController();
 
   @override
   void initState() {
@@ -71,28 +72,48 @@ class _NewChattingListViewState extends State<NewChattingListView> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
       children: [
-        ListView(
-          children: _buildProfileList(context),
+        Expanded(
+          child: ListView(
+            children: _buildProfileList(context),
+          ),
         ),
         Padding(
-          padding: const EdgeInsets.all(30.0),
-          child: Align(
-            alignment: Alignment.bottomRight,
-            child: ElevatedButton(
-              onPressed: () async {
-                var checkedCount = this._checkboxValueList.values.where((c) => c == true).length;
-                if (checkedCount == 0) {
-                  _showSnackBar(context);
-                  return;
-                }
+          padding: const EdgeInsets.all(10.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: '입력 안할 시 기본 이름으로 설정',
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+                  ),
+                  keyboardType: TextInputType.text,
+                  controller: nameController,
+                  style: TextStyle(fontSize: 15),
+                ),
+              ),
+              SizedBox(
+                width: 15.0,
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  var checkedCount = this._checkboxValueList.values.where((c) => c == true).length;
+                  if (checkedCount == 0) {
+                    _showSnackBar(context, '채팅 만들 친구를 선택해 주세요');
+                    return;
+                  }
 
-                await _createNewChattingRoom();
-                Navigator.of(context).pop(true);
-              },
-              child: Text('채팅방 생성'),
-            ),
+                  await _createNewChattingRoom();
+                  Navigator.of(context).pop(true);
+                },
+                child: Text('채팅방 생성'),
+              ),
+            ],
           ),
         ),
       ],
@@ -105,6 +126,27 @@ class _NewChattingListViewState extends State<NewChattingListView> {
     String newChattingRoomId = await roomHandler.getNewChattingRoomId();
 
     // 전체 채팅 리스트에 추가
+    List<String> members = await _addTotalChattingList(newChattingRoomId);
+
+    // 각 유저의 채팅 리스트에 추가
+    await _addEachUserChattingList(members, newChattingRoomId);
+  }
+
+  Future<void> _addEachUserChattingList(List<String> members, String newChattingRoomId) async {
+    ChattingRoomHandler roomHandler = ChattingRoomHandler();
+    for (var uid in members) {
+      List<String> chattingList = await roomHandler.getChattingList(uid);
+      chattingList.add(newChattingRoomId);
+
+      await _firestore.collection('user').doc('chattings')
+      .collection('data').doc(uid)
+      .set({
+        'chatting_rooms' : chattingList
+      });
+    }
+  }
+
+  Future<List<String>> _addTotalChattingList(String newChattingRoomId) async {
     List<String> members = [];
     for (var selectedFriend in this._checkboxValueList.entries) {
       if (selectedFriend.value) {
@@ -114,10 +156,16 @@ class _NewChattingListViewState extends State<NewChattingListView> {
     members.add(_authentication.currentUser!.uid);
 
     ChattingType type = (members.length >= 3) ? ChattingType.group : ChattingType.individual;
-    String chattingRoomName = (members.length >= 3) ? '단체방${newChattingRoomId}' : '개인방';
+    String chattingRoomName = '';
+    if (this.nameController.text.isEmpty) {
+      chattingRoomName = (members.length >= 3) ? '단체방${newChattingRoomId}' : '개인방';
+    }
+    else {
+      chattingRoomName = this.nameController.text;
+    }
 
     ChattingRoom newChattingRoom = ChattingRoom.getChattingRoom(
-        newChattingRoomId, type, '', chattingRoomName, members.length, '', DateTime(0), members
+      newChattingRoomId, type, '', chattingRoomName, members.length, '', DateTime(0), members
     );
 
     await _firestore.collection('chatting').doc('rooms')
@@ -129,26 +177,13 @@ class _NewChattingListViewState extends State<NewChattingListView> {
       'thumbnail' : newChattingRoom.thumbnail,
       'type' : newChattingRoom.chattingRoomType.index
     });
-
-    // 각 유저의 채팅 리스트에 추가
-    for (var uid in members) {
-      List<String> chattingList = await roomHandler.getChattingList(uid);
-      chattingList.add(newChattingRoomId);
-
-      await _firestore.collection('user').doc('chattings')
-      .collection('data').doc(uid)
-      .set({
-        'chatting_rooms' : chattingList
-      });
-    }
-
-    // TODO: 이름 설정 할 수 있게 추가해야 함
+    return members;
   }
 
-  void _showSnackBar(BuildContext context) {
+  void _showSnackBar(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('채팅 만들 친구를 선택해 주세요'),
+        content: Text(msg),
         duration: Duration(seconds: 2),
         backgroundColor: Colors.lightBlue,
       ),
